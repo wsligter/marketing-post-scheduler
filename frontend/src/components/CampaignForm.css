@@ -1,0 +1,183 @@
+/* Campaign Form specific styles */
+.campaign-form-container {
+  /* Using content-container styles from global.css */
+  background-color: var(--kodify-white);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* Use heading styles from global.css */
+.campaign-form-container h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--kodify-blue);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Campaign form specific overrides */
+.campaign-form .form-group {
+  margin-bottom: 15px; /* Slightly more spacing for campaign form fields */
+}
+
+/* These styles can be removed once global styles are fully applied */
+.form-group {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 4px;
+  font-weight: 500;
+  color: var(--text-color);
+  font-size: 13px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+}
+
+.form-group select {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: var(--kodify-white);
+  color: var(--text-color);
+  cursor: pointer;
+  box-sizing: border-box;
+  width: 100%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--kodify-orange);
+  box-shadow: 0 0 0 2px rgba(255, 176, 53, 0.2);
+}
+
+.error-message {
+  background-color: #ffebee;
+  color: #f44336;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.submit-btn {
+  background-color: var(--kodify-orange);
+  color: var(--kodify-black);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: none;
+  width: 100%;
+}
+
+.submit-btn:hover {
+  background-color: var(--kodify-orange-hover);
+}
+
+.submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.cancel-btn:hover {
+  background-color: var(--kodify-blue);
+  color: var(--kodify-white);
+}
+
+.form-buttons .delete-btn {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.form-buttons .delete-btn:hover {
+  background-color: var(--danger-hover);
+}
+
+.form-buttons .delete-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Modal delete button */
+.modal-buttons .delete-btn {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.modal-buttons .delete-btn:hover {
+  background-color: var(--danger-hover);
+}
+
+.modal-buttons .delete-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

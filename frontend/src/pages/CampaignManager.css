@@ -1,0 +1,138 @@
+.campaign-manager {
+  padding: 10px;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+/* Using the same grid layout as social media scheduler */
+.campaign-manager .scheduler-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .campaign-manager .scheduler-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Campaign List Styles - similar to posts list */
+.campaign-manager .posts-list {
+  background-color: var(--kodify-white);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.campaign-manager .posts-list h2 {
+  color: var(--kodify-blue);
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Campaign cards styling */
+.campaigns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.campaign-card {
+  background-color: var(--kodify-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  padding: 12px;
+}
+
+.campaign-card::after {
+  content: 'Click to edit';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: var(--kodify-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.campaign-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-color: var(--kodify-orange);
+}
+
+.campaign-card:hover::after {
+  opacity: 1;
+}
+
+.campaign-title {
+  color: var(--kodify-blue);
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+
+.campaign-description {
+  color: var(--kodify-black);
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.campaign-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--lighter-text);
+}
+
+.campaign-status {
+  display: inline-block;
+}
+
+.campaign-date {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Loading and error states */
+.loading {
+  text-align: center;
+  padding: 10px;
+  color: #666;
+  font-size: 13px;
+}
+
+.error {
+  color: var(--kodify-red);
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #ffeeee;
+  border-radius: 4px;
+  border-left: 4px solid var(--kodify-red);
+  font-size: 13px;
+}
+
+.no-campaigns {
+  text-align: center;
+  padding: 15px;
+  color: #666;
+  font-style: italic;
+  font-size: 13px;
+}

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './Modal.css';
+// Modal styles are in global.css
 
 const Modal = ({ title, children, onClose }) => {
   // Close modal when Escape key is pressed

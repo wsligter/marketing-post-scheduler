@@ -1,4 +1,5 @@
 import React from 'react';
+import { Modal } from '../common';
 import axios from 'axios';
 
 const CampaignsList = ({ campaigns, loading, error, onEditCampaign, onDeleteCampaign }) => {

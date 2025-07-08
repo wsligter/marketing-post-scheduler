@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from './Modal';
-import './CampaignForm.css';
+import { Modal } from '../common';
+// Using consolidated campaigns.css from styles directory
 
 const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, setEditingCampaign, onDeleteCampaign }) => {
   const [formData, setFormData] = useState({

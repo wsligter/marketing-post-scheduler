@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
 import axios from 'axios';
-import Modal from './Modal';
+import { Modal } from '../common';
+import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, onDeletePost }) => {

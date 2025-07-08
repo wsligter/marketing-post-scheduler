@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import PostForm from '../components/PostForm';
-import PostsList from '../components/PostsList';
-import './SocialMediaScheduler.css';
+import { PostForm, PostsList } from '../components/posts';
+import '../styles/posts.css';
 
-const SocialMediaScheduler = () => {
+const PostSchedulerPage = () => {
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
@@ -159,4 +158,4 @@ const SocialMediaScheduler = () => {
   );
 };
 
-export default SocialMediaScheduler;
+export default PostSchedulerPage;

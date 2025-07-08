@@ -1,73 +1,100 @@
-# Marketing Tool Application
+# Marketing Post Scheduler
 
-A full-stack marketing campaign management application built with Node.js, React, MongoDB, and Docker.
+A full-stack application for planning and scheduling marketing campaigns across social media platforms. Built with Node.js, React, MongoDB, and Docker.
 
-## Project Structure
+## Quick Start
 
-```
-marketing_tool/
-├── backend/           # Express.js API
-├── frontend/          # React frontend
-├── database/          # MongoDB data (volume mount)
-├── docker-compose.yml # Docker configuration
-└── README.md          # This file
-```
+### Prerequisites
 
-## Prerequisites
+- [Docker](https://www.docker.com/get-started) and Docker Compose
+- [Just](https://github.com/casey/just#installation) (optional, for simplified commands)
 
-- Docker and Docker Compose
-- Node.js and npm (for local development without Docker)
+### Run the Application
 
-## Getting Started
-
-### Running with Docker
-
-1. Clone this repository
-2. Navigate to the project directory
-3. Start the application:
+**With Docker (recommended):**
 
 ```bash
+# Using Docker directly
 docker-compose up
+
+# OR using Just (if installed)
+just start
 ```
 
-This will:
-- Build and start the backend service on port 3000
-- Build and start the frontend service on port 8080
-- Start a MongoDB instance on port 27017
-
-### Accessing the Application
-
-- Frontend: http://localhost:8080
-- Backend API: http://localhost:3000
-- MongoDB: mongodb://localhost:27017/marketingapp
-
-## Development
-
-### Backend
-
-The backend is an Express.js application with MongoDB for data storage.
+**For Development (without Docker):**
 
 ```bash
+# Terminal 1 - Backend
 cd backend
 npm install
 npm run dev
-```
 
-### Frontend
-
-The frontend is a React application created with Create React App.
-
-```bash
+# Terminal 2 - Frontend
 cd frontend
 npm install
 npm start
 ```
 
+### Access the Application
+
+- **Frontend:** http://localhost:8081
+- **Backend API:** http://localhost:3000
+- **MongoDB:** mongodb://localhost:27017/marketingapp
+
 ## Features
 
 - Create and manage marketing campaigns
-- Track campaign status
-- Store campaign data in MongoDB
+- Schedule social media posts
+- Track campaign performance
+- Centralized content management
+
+## Project Structure
+
+```plaintext
+marketing_tool/
+├── backend/           # Express.js API
+├── frontend/          # React frontend
+├── database/          # MongoDB data (volume mount)
+├── docker-compose.yml # Docker configuration
+├── justfile           # Task runner for common commands
+└── README.md          # This file
+```
+
+## Command Reference
+
+### Docker Commands
+
+```bash
+# Start all services
+docker-compose up
+
+# Start in background
+docker-compose up -d
+
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f
+```
+
+### Just Commands
+
+If you have [Just](https://github.com/casey/just#installation) installed:
+
+```bash
+# List all available commands
+just
+
+# Common commands
+just start           # Start all containers
+just start-detached  # Start in background
+just stop            # Stop all containers
+just logs            # View all logs
+just logs-service backend  # View specific service logs
+just rebuild         # Rebuild and restart
+just status          # Show container status
+```
 
 ## License
 

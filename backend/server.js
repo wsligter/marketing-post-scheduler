@@ -11,9 +11,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001; // Changed from 3000 to 3001 to avoid conflicts
 
+// Get frontend URL from environment variable or use default values
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
+
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  origin: [
+    frontendUrl,
+    'http://localhost:3000', 
+    'http://localhost:3001', 
+    'http://localhost:3002', 
+    'http://localhost:8081'
+  ],
   credentials: true
 }));
 app.use(express.json());

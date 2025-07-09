@@ -5,25 +5,63 @@
 default:
     @just --list
 
-# Start all containers
-start:
-    docker-compose up
+# Helper recipe to check and kill processes using ports
+check-ports:
+    #!/usr/bin/env bash
+    # Check backend port (3000)
+    echo "Checking for processes using backend port 3000..."
+    if lsof -i :3000 > /dev/null; then
+        echo "Found process using port 3000. Attempting to kill..."
+        lsof -i :3000 -t | xargs kill -9 || true
+        echo "Process killed."
+    else
+        echo "No process found using port 3000."
+    fi
+    
+    # Check frontend port (8081)
+    echo "Checking for processes using frontend port 8081..."
+    if lsof -i :8081 > /dev/null; then
+        echo "Found process using port 8081. Attempting to kill..."
+        lsof -i :8081 -t | xargs kill -9 || true
+        echo "Process killed."
+    else
+        echo "No process found using port 8081."
+    fi
+    
+    # Check MongoDB port (27017)
+    echo "Checking for processes using MongoDB port 27017..."
+    if lsof -i :27017 > /dev/null; then
+        echo "Found process using port 27017. Attempting to kill..."
+        lsof -i :27017 -t | xargs kill -9 || true
+        echo "Process killed."
+    else
+        echo "No process found using port 27017."
+    fi
 
-# Start all containers in detached mode
-start-detached:
-    docker-compose up -d
+# Start all containers (stopping any existing ones first)
+# Optional parameters: backend-port, frontend-port, db-port
+start backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up
+
+# Start all containers in detached mode (stopping any existing ones first)
+# Optional parameters: backend-port, frontend-port, db-port
+start-detached backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up -d
 
 # Start only the backend service
-start-backend:
-    docker-compose up backend
+# Optional parameters: backend-port, frontend-port
+start-backend backend-port="3000" frontend-port="8081":
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up backend
 
 # Start only the frontend service
-start-frontend:
-    docker-compose up frontend
+# Optional parameters: backend-port, frontend-port
+start-frontend backend-port="3000" frontend-port="8081":
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up frontend
 
 # Start only the database service
-start-db:
-    docker-compose up db
+# Optional parameters: db-port
+start-db db-port="27017":
+    DB_PORT={{db-port}} docker-compose up db
 
 # Stop all containers
 stop:
@@ -49,13 +87,20 @@ logs-follow:
 logs-follow-service service:
     docker-compose logs -f {{service}}
 
-# Rebuild and start all containers
-rebuild:
-    docker-compose up --build
+# Build all containers without starting them
+# Optional parameters: backend-port, frontend-port, db-port
+build backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose build
 
-# Rebuild and start all containers in detached mode
-rebuild-detached:
-    docker-compose up --build -d
+# Build and start all containers (stopping any existing ones first)
+# Optional parameters: backend-port, frontend-port, db-port
+build-start backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up --build
+
+# Build and start all containers in detached mode (stopping any existing ones first)
+# Optional parameters: backend-port, frontend-port, db-port
+build-start-detached backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up --build -d
 
 # Show container status
 status:

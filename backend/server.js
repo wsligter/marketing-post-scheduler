@@ -32,7 +32,7 @@ connectToDatabase()
     const appName = process.env.MONGO_APP_NAME;
     
     // Construct the MongoDB URI for Mongoose
-    const uri = `mongodb+srv://${username}:${password}@${cluster}/?retryWrites=true&w=majority&appName=${appName}`;
+    const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}`;
     
     // Connect Mongoose to the same MongoDB Atlas instance
     return mongoose.connect(uri);

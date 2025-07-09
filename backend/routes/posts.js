@@ -4,6 +4,7 @@ const Post = require('../models/Post');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { uploadImage, deleteImage } = require('../utils/cloudinary-actions');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -60,10 +61,17 @@ router.post('/', upload.single('image'), async (req, res) => {
       postData.campaign = campaign;
     }
 
-    // If an image was uploaded, add its path to the post data
+    // If an image was uploaded, upload it to Cloudinary
     if (req.file) {
-      // Store the relative path to access via API
-      postData.imageUrl = `/uploads/${req.file.filename}`;
+      try {
+        // Upload to Cloudinary
+        const cloudinaryResult = await uploadImage(req.file.path);
+        
+        // Store the Cloudinary URL
+        postData.imageUrl = cloudinaryResult.secure_url;
+      } catch (uploadError) {
+        return res.status(400).json({ message: uploadError.message });
+      }
     }
 
     const post = new Post(postData);
@@ -98,9 +106,17 @@ router.patch('/:id', upload.single('image'), async (req, res) => {
     if (content) updateData.content = content;
     if (scheduledDate) updateData.scheduledDate = new Date(scheduledDate);
     
-    // If a new image was uploaded, update the image URL
+    // If a new image was uploaded, upload it to Cloudinary
     if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      try {
+        // Upload to Cloudinary
+        const cloudinaryResult = await uploadImage(req.file.path);
+        
+        // Store the Cloudinary URL
+        updateData.imageUrl = cloudinaryResult.secure_url;
+      } catch (uploadError) {
+        return res.status(400).json({ message: uploadError.message });
+      }
     }
     
     const updatedPost = await Post.findByIdAndUpdate(
@@ -135,18 +151,36 @@ router.put('/:id', upload.single('image'), async (req, res) => {
       post.campaign = campaign;
     }
     
-    // Handle image update
+    // Handle image update or removal
     if (req.file) {
-      // If post already has an image, delete the old one
-      if (post.imageUrl) {
-        const oldImagePath = path.join(__dirname, '..', post.imageUrl);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
+      try {
+        // If there was a previous image in Cloudinary, delete it
+        if (post.imageUrl && post.imageUrl.includes('cloudinary.com')) {
+          await deleteImage(post.imageUrl);
         }
+        
+        // Upload new image to Cloudinary
+        const cloudinaryResult = await uploadImage(req.file.path);
+        
+        // Set the new image URL
+        post.imageUrl = cloudinaryResult.secure_url;
+      } catch (uploadError) {
+        return res.status(400).json({ message: uploadError.message });
       }
-      
-      // Set the new image URL
-      post.imageUrl = `/uploads/${req.file.filename}`;
+    } else if (req.body.removeImage === 'true') {
+      // User wants to remove the image without adding a new one
+      try {
+        // Delete from Cloudinary if it's a Cloudinary URL
+        if (post.imageUrl && post.imageUrl.includes('cloudinary.com')) {
+          await deleteImage(post.imageUrl);
+        }
+        
+        // Remove the image URL from the post
+        post.imageUrl = null;
+      } catch (deleteError) {
+        console.error('Error deleting image:', deleteError);
+        // Continue with the update even if image deletion fails
+      }
     }
     
     const updatedPost = await post.save();
@@ -166,11 +200,14 @@ router.delete('/:id', async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
     
-    // Delete the image file if it exists
-    if (post.imageUrl) {
-      const imagePath = path.join(__dirname, '..', post.imageUrl);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+    // Delete the image from Cloudinary if it exists
+    if (post.imageUrl && post.imageUrl.includes('cloudinary.com')) {
+      try {
+        await deleteImage(post.imageUrl);
+        console.log(`Deleted image from Cloudinary: ${post.imageUrl}`);
+      } catch (deleteError) {
+        console.error('Error deleting image from Cloudinary:', deleteError);
+        // Continue with post deletion even if image deletion fails
       }
     }
     

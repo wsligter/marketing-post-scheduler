@@ -12,7 +12,10 @@ const app = express();
 const PORT = process.env.PORT || 3001; // Changed from 3000 to 3001 to avoid conflicts
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Connect to MongoDB Atlas

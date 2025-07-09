@@ -18,6 +18,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   const [scheduledPosts, setScheduledPosts] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [removeImage, setRemoveImage] = useState(false); // Flag to indicate image should be removed
   
   // Fetch campaigns and scheduled posts when component mounts
   useEffect(() => {
@@ -41,8 +42,15 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
       
       // Set image preview if post has an image
       if (editingPost.imageUrl) {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-        setImagePreview(`${apiUrl}${editingPost.imageUrl}`);
+        // For Cloudinary URLs, we can use them directly
+        // For local URLs, we need to prepend the API URL
+        if (editingPost.imageUrl.startsWith('http')) {
+          // Create thumbnail from remote image
+          createRemoteImageThumbnail(editingPost.imageUrl);
+        } else {
+          const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+          createRemoteImageThumbnail(`${apiUrl}${editingPost.imageUrl}`);
+        }
       } else {
         setImagePreview(null);
       }
@@ -50,6 +58,58 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
       resetForm();
     }
   }, [editingPost]);
+  
+  // Create a thumbnail from a remote image URL
+  const createRemoteImageThumbnail = (imageUrl) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous'; // Handle CORS issues
+    img.onload = () => {
+      // Create a canvas element to resize the image
+      const canvas = document.createElement('canvas');
+      
+      // Set max dimensions for the thumbnail
+      const MAX_WIDTH = 300;
+      const MAX_HEIGHT = 200;
+      
+      // Calculate the new dimensions while maintaining aspect ratio
+      let width = img.width;
+      let height = img.height;
+      
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width = Math.round((width * MAX_HEIGHT) / height);
+          height = MAX_HEIGHT;
+        }
+      }
+      
+      // Resize the image
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      
+      try {
+        ctx.drawImage(img, 0, 0, width, height);
+        // Get the data URL of the resized image
+        const thumbnailUrl = canvas.toDataURL('image/jpeg');
+        // Set the preview URL
+        setImagePreview(thumbnailUrl);
+      } catch (error) {
+        console.error('Error creating thumbnail:', error);
+        // Fallback to original URL if thumbnail creation fails
+        setImagePreview(imageUrl);
+      }
+    };
+    img.onerror = () => {
+      console.error('Error loading image for thumbnail');
+      setImagePreview(imageUrl); // Fallback to original URL
+    };
+    img.src = imageUrl;
+  };
   
   // Fetch campaigns from API
   const fetchCampaigns = async () => {
@@ -84,6 +144,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     setIsEditing(false);
     setError(null);
     setSelectedCampaign('none');
+    setRemoveImage(false);
     
     // Reset the file input element by clearing its value
     const fileInput = document.getElementById('image');
@@ -92,15 +153,61 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     }
   };
 
+  // Create a thumbnail from the selected image
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setImage(selectedFile);
       
-      // Create a preview URL for the selected image
-      const previewUrl = URL.createObjectURL(selectedFile);
-      setImagePreview(previewUrl);
+      // Store the original file in memory for upload
+      createImageThumbnail(selectedFile);
     }
+  };
+  
+  // Function to create a thumbnail from an image file
+  const createImageThumbnail = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        // Create a canvas element to resize the image
+        const canvas = document.createElement('canvas');
+        
+        // Set max dimensions for the thumbnail
+        const MAX_WIDTH = 300;
+        const MAX_HEIGHT = 200;
+        
+        // Calculate the new dimensions while maintaining aspect ratio
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width = Math.round((width * MAX_HEIGHT) / height);
+            height = MAX_HEIGHT;
+          }
+        }
+        
+        // Resize the image
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Get the data URL of the resized image
+        const thumbnailUrl = canvas.toDataURL(file.type);
+        
+        // Set the preview URL
+        setImagePreview(thumbnailUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDelete = async () => {
@@ -155,6 +262,11 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
       
       if (image) {
         formData.append('image', image);
+      }
+      
+      // If editing and the removeImage flag is set, tell the server to remove the image
+      if (isEditing && removeImage) {
+        formData.append('removeImage', 'true');
       }
       
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
@@ -236,6 +348,10 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
                 onClick={() => {
                   setImage(null);
                   setImagePreview(null);
+                  // Set flag to remove image if we're editing an existing post
+                  if (isEditing) {
+                    setRemoveImage(true);
+                  }
                 }}
               >
                 Remove

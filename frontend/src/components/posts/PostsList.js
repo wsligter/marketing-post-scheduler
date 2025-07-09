@@ -38,7 +38,7 @@ const PostsList = ({ posts, loading, error, onEditPost }) => {
             {post.imageUrl && (
               <div className="post-image">
                 <img 
-                  src={`${process.env.REACT_APP_API_URL || 'http://localhost:3000'}${post.imageUrl}`} 
+                  src={post.imageUrl.startsWith('http') ? post.imageUrl : `${process.env.REACT_APP_API_URL || 'http://localhost:3001'}${post.imageUrl}`} 
                   alt="Post" 
                 />
               </div>

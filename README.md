@@ -94,6 +94,10 @@ just logs            # View all logs
 just logs-service backend  # View specific service logs
 just rebuild         # Rebuild and restart
 just status          # Show container status
+just bump-patch      # Increment patch version (1.0.0 -> 1.0.1)
+just bump-minor      # Increment minor version (1.0.0 -> 1.1.0)
+just bump-major      # Increment major version (1.0.0 -> 2.0.0)
+just version-bump patch  # Alternative way to bump version
 ```
 
 ## License

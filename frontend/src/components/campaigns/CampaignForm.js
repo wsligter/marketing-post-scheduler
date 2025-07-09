@@ -6,7 +6,6 @@ import { Modal } from '../common';
 const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, setEditingCampaign, onDeleteCampaign }) => {
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     status: 'draft'
   });
   const [loading, setLoading] = useState(false);
@@ -19,13 +18,11 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
     if (editingCampaign) {
       setFormData({
         name: editingCampaign.name || '',
-        description: editingCampaign.description || '',
         status: editingCampaign.status || 'draft'
       });
     } else {
       setFormData({
         name: '',
-        description: '',
         status: 'draft'
       });
     }
@@ -69,7 +66,6 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
       // Reset form
       setFormData({
         name: '',
-        description: '',
         status: 'draft'
       });
     } catch (err) {
@@ -84,7 +80,6 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
     setEditingCampaign(null);
     setFormData({
       name: '',
-      description: '',
       status: 'draft'
     });
   };
@@ -105,7 +100,6 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
       setEditingCampaign(null);
       setFormData({
         name: '',
-        description: '',
         status: 'draft'
       });
     } catch (err) {
@@ -135,16 +129,7 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
           />
         </div>
         
-        <div className="form-group">
-          <label htmlFor="description">Description:</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows="4"
-          />
-        </div>
+
         
         <div className="form-group">
           <label htmlFor="status">Status:</label>

@@ -60,3 +60,19 @@ rebuild-detached:
 # Show container status
 status:
     docker-compose ps
+
+# Bump version (major, minor, or patch)
+version-bump type:
+    node version-bump.js {{type}}
+
+# Bump patch version
+bump-patch:
+    node version-bump.js patch
+
+# Bump minor version
+bump-minor:
+    node version-bump.js minor
+
+# Bump major version
+bump-major:
+    node version-bump.js major

@@ -1,7 +1,13 @@
 import PostSchedulerPage from './PostSchedulerPage';
 import CampaignsPage from './CampaignsPage';
+import LoginPage from './LoginPage';
+import ProfilePage from './ProfilePage';
+import AdminPanel from './AdminPanel';
 
 export {
   PostSchedulerPage,
-  CampaignsPage
+  CampaignsPage,
+  LoginPage,
+  ProfilePage,
+  AdminPanel
 };

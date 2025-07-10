@@ -44,12 +44,19 @@ connectToDatabase()
     // Connect Mongoose to the same MongoDB Atlas instance
     return mongoose.connect(uri);
   })
-  .then(() => console.log('Mongoose connected to MongoDB Atlas'))
+  .then(() => {
+    console.log('Mongoose connected to MongoDB Atlas');
+    
+    // Create initial admin user if no users exist
+    const { createInitialAdmin } = require('./controllers/userController');
+    createInitialAdmin();
+  })
   .catch(err => console.error('MongoDB Atlas connection error:', err));
 
 // Import models
 const Campaign = require('./models/Campaign');
 const Post = require('./models/Post');
+const User = require('./models/User');
 
 // Routes
 app.get('/', (req, res) => {
@@ -60,11 +67,13 @@ app.get('/', (req, res) => {
 const postsRoutes = require('./routes/posts');
 const campaignsRoutes = require('./routes/campaigns');
 const healthRoutes = require('./routes/health');
+const usersRoutes = require('./routes/users');
 
 // Use routes
 app.use('/api/posts', postsRoutes);
 app.use('/api/campaigns', campaignsRoutes);
 app.use('/api/health', healthRoutes);
+app.use('/api/users', usersRoutes);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

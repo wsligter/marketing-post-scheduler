@@ -6,3 +6,6 @@
 # Dependencies
 package-lock.json
 node_modules
+
+# Admin creator script
+create-admin-user.js

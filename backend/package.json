@@ -1,6 +1,6 @@
 {
   "name": "marketing-tool-backend",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Backend for marketing tool application",
   "main": "server.js",
   "scripts": {
@@ -9,10 +9,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "axios": "^1.10.0",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "mongoose": "^7.0.3",
     "multer": "^1.4.5-lts.1"

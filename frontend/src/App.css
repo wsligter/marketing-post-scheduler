@@ -59,10 +59,18 @@
   padding: 0;
   margin: 15px 0 0;
   justify-content: center;
+  position: relative;
+  width: 100%;
 }
 
 .main-nav li {
   margin: 0 15px;
+}
+
+.main-nav li.user-menu {
+  position: absolute;
+  right: 0;
+  margin-right: 0;
 }
 
 .main-nav a {

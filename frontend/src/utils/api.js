@@ -10,8 +10,14 @@ console.log('API Configuration:', {
 
 // Make sure the API URL includes the protocol
 let baseURL = config.apiUrl;
-if (!baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
+
+// Special case for Render deployment
+if (baseURL === 'marketing-tool-backend') {
+  baseURL = 'https://marketing-tool-backend.onrender.com';
+  console.log('Detected Render service name, using full URL:', baseURL);
+} else if (!baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
   baseURL = `http://${baseURL}`;
+  console.log('Added http:// protocol to URL:', baseURL);
 }
 
 // Create an axios instance with base URL from config

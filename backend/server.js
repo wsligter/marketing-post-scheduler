@@ -12,7 +12,19 @@ const app = express();
 const PORT = process.env.PORT || 3002; // Using port 3002 as default
 
 // Get frontend URL from environment variable or use default values
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
+let frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
+
+// Handle Render deployment where only the service name is provided
+if (frontendUrl === 'marketing-tool-frontend') {
+  frontendUrl = 'https://marketing-tool-frontend.onrender.com';
+  console.log('Detected Render service name for frontend, using full URL:', frontendUrl);
+}
+
+// Ensure URL has protocol
+if (!frontendUrl.startsWith('http://') && !frontendUrl.startsWith('https://')) {
+  frontendUrl = `https://${frontendUrl}`;
+  console.log('Added https:// protocol to frontend URL:', frontendUrl);
+}
 
 // Log CORS configuration
 console.log('CORS configuration:');
@@ -32,7 +44,10 @@ app.use(cors({
     'http://127.0.0.1:3001',
     'http://127.0.0.1:3002',
     'http://127.0.0.1:8080',
-    'http://127.0.0.1:8081'
+    'http://127.0.0.1:8081',
+    // Render deployment URLs
+    'https://marketing-tool-frontend.onrender.com',
+    'https://marketing-tool-backend.onrender.com'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],

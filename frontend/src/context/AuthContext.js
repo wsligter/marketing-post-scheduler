@@ -51,15 +51,38 @@ export const AuthProvider = ({ children }) => {
     console.log('Attempting login for:', email);
     
     try {
+      // Make sure API_URL is correct
+      let loginUrl = API_URL;
+      if (loginUrl === 'marketing-tool-backend') {
+        loginUrl = 'https://marketing-tool-backend.onrender.com';
+      }
+      if (!loginUrl.startsWith('http://') && !loginUrl.startsWith('https://')) {
+        loginUrl = `http://${loginUrl}`;
+      }
+      
+      console.log('Making login request to:', `${loginUrl}/api/users/login`);
+      
       // Use regular axios for login since we don't have a token yet
-      console.log('Making login request to:', `${API_URL}/api/users/login`);
-      const response = await axios.post(`${API_URL}/api/users/login`, { email, password });
+      const response = await axios.post(`${loginUrl}/api/users/login`, 
+        { email, password },
+        { 
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        }
+      );
       
-      console.log('Login response:', response);
-      console.log('Token in response:', response.data.token ? 'Token exists' : 'No token');
+      console.log('Login response status:', response.status);
+      console.log('Login response headers:', response.headers);
+      console.log('Login response data type:', typeof response.data);
+      console.log('Login response data keys:', response.data ? Object.keys(response.data) : 'No data');
+      console.log('Token in response:', response.data && response.data.token ? `Token exists (${response.data.token.substring(0, 10)}...)` : 'No token');
       
-      if (!response.data.token) {
+      if (!response.data || !response.data.token) {
         console.error('No token received in login response!');
+        console.error('Full response data:', JSON.stringify(response.data));
         setError('Authentication failed: No token received');
         setLoading(false);
         return false;

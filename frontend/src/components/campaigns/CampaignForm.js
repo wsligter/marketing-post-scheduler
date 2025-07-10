@@ -35,18 +35,30 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!formData.name) {
+      setError('Campaign name is required');
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
     try {
+      console.log('Submitting campaign form...', formData);
+      console.log('Auth token:', localStorage.getItem('token'));
+      
       let response;
 
       if (editingCampaign) {
         // Update existing campaign
+        console.log('Updating existing campaign:', editingCampaign._id);
         response = await api.put(
           `/api/campaigns/${editingCampaign._id}`, 
           formData
         );
+        console.log('Update campaign response:', response);
         
         if (onCampaignUpdated) {
           onCampaignUpdated(response.data);
@@ -55,9 +67,12 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
         setEditingCampaign(null);
       } else {
         // Create new campaign
+        console.log('Creating new campaign:', formData);
         response = await api.post('/api/campaigns', formData);
+        console.log('Create campaign response:', response);
         
         if (onCampaignCreated) {
+          console.log('Calling onCampaignCreated with:', response.data);
           onCampaignCreated(response.data);
         }
       }
@@ -68,8 +83,18 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
         status: 'draft'
       });
     } catch (err) {
-      setError('Error saving campaign. Please try again.');
       console.error('Error saving campaign:', err);
+      console.error('Error details:', err.response ? err.response.data : 'No response data');
+      console.error('Error status:', err.response ? err.response.status : 'No status');
+      
+      // More descriptive error message based on the error
+      if (err.response && err.response.status === 401) {
+        setError('Authentication error. Please log in again.');
+      } else if (err.response && err.response.data && err.response.data.message) {
+        setError(`Error: ${err.response.data.message}`);
+      } else {
+        setError('Error saving campaign. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

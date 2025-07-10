@@ -16,20 +16,35 @@ function CampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
+      console.log('Fetching campaigns...');
+      console.log('Auth token:', localStorage.getItem('token'));
+      
       const response = await api.get('/api/campaigns');
+      
+      console.log('Campaigns API response:', response);
+      console.log('Response data type:', typeof response.data);
+      console.log('Is array?', Array.isArray(response.data));
+      
       // Ensure we always set campaigns as an array
-      setCampaigns(Array.isArray(response.data) ? response.data : []);
+      const campaignsArray = Array.isArray(response.data) ? response.data : [];
+      console.log('Campaigns array to set:', campaignsArray);
+      
+      setCampaigns(campaignsArray);
       setLoading(false);
     } catch (err) {
+      console.error('Error fetching campaigns:', err);
+      console.error('Error details:', err.response ? err.response.data : 'No response data');
+      console.error('Error status:', err.response ? err.response.status : 'No status');
+      
       setError('Error fetching campaigns');
       setCampaigns([]); // Set empty array on error
       setLoading(false);
-      console.error('Error fetching campaigns:', err);
     }
   };
 
   const handleCampaignCreated = (newCampaign) => {
-    setCampaigns([...campaigns, newCampaign]);
+    console.log('Campaign created:', newCampaign);
+    setCampaigns(prevCampaigns => [...prevCampaigns, newCampaign]);
   };
   
   const handleCampaignUpdated = (updatedCampaign) => {

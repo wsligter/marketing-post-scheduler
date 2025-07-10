@@ -81,6 +81,7 @@ const LoginPage = () => {
               placeholder="Enter your email"
               disabled={isSubmitting}
               required
+              autoComplete="email"
             />
           </div>
           
@@ -94,6 +95,7 @@ const LoginPage = () => {
               placeholder="Enter your password"
               disabled={isSubmitting}
               required
+              autoComplete="current-password"
             />
           </div>
           

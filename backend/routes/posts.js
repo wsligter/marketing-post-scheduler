@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { uploadImage, deleteImage } = require('../utils/cloudinary-actions');
+const { requireAuth } = require('../middleware/auth');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -37,7 +38,7 @@ const upload = multer({
 });
 
 // Get all posts
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const posts = await Post.find().populate('campaign').sort({ scheduledDate: 1 });
     res.json(posts);
@@ -47,7 +48,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new post
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   try {
     const { content, scheduledDate, campaign } = req.body;
     
@@ -87,7 +88,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // Get a specific post
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
@@ -98,7 +99,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a post (PATCH - partial update)
-router.patch('/:id', upload.single('image'), async (req, res) => {
+router.patch('/:id', requireAuth, upload.single('image'), async (req, res) => {
   try {
     const { content, scheduledDate } = req.body;
     
@@ -133,7 +134,7 @@ router.patch('/:id', upload.single('image'), async (req, res) => {
 });
 
 // Update a post (PUT - full update)
-router.put('/:id', upload.single('image'), async (req, res) => {
+router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
@@ -195,7 +196,7 @@ router.put('/:id', upload.single('image'), async (req, res) => {
 });
 
 // Delete a post
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });

@@ -23,20 +23,36 @@ const PostSchedulerPage = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
+      console.log('Fetching posts...');
+      console.log('Auth token:', localStorage.getItem('token'));
+      
       const response = await api.get('/api/posts');
+      
+      console.log('Posts API response:', response);
+      console.log('Response data type:', typeof response.data);
+      console.log('Is array?', Array.isArray(response.data));
+      
       // Ensure we have an array of posts
       const postsArray = Array.isArray(response.data) ? response.data : [];
+      console.log('Posts array length:', postsArray.length);
+      
       // Sort posts by scheduledDate (ascending order - earliest first)
       const sortedPosts = postsArray.sort((a, b) => 
         new Date(a.scheduledDate) - new Date(b.scheduledDate)
       );
+      console.log('Sorted posts:', sortedPosts);
+      
       setAllPosts(sortedPosts);
       
       // Filter posts based on selected campaign
+      console.log('Filtering posts by campaign:', selectedCampaign);
       filterPosts(sortedPosts, selectedCampaign);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching posts:', err);
+      console.error('Error details:', err.response ? err.response.data : 'No response data');
+      console.error('Error status:', err.response ? err.response.status : 'No status');
+      
       setError('Failed to load posts. Please try again later.');
       setAllPosts([]);
       setPosts([]);
@@ -47,12 +63,26 @@ const PostSchedulerPage = () => {
   const fetchCampaigns = async () => {
     try {
       setLoadingCampaigns(true);
+      console.log('Fetching campaigns for post scheduler...');
+      console.log('Auth token:', localStorage.getItem('token'));
+      
       const response = await api.get('/api/campaigns');
+      
+      console.log('Campaigns API response in post scheduler:', response);
+      console.log('Response data type:', typeof response.data);
+      console.log('Is array?', Array.isArray(response.data));
+      
       // Ensure we have an array of campaigns
-      setCampaigns(Array.isArray(response.data) ? response.data : []);
+      const campaignsArray = Array.isArray(response.data) ? response.data : [];
+      console.log('Campaigns array length:', campaignsArray.length);
+      
+      setCampaigns(campaignsArray);
       setLoadingCampaigns(false);
     } catch (err) {
-      console.error('Error fetching campaigns:', err);
+      console.error('Error fetching campaigns for post scheduler:', err);
+      console.error('Error details:', err.response ? err.response.data : 'No response data');
+      console.error('Error status:', err.response ? err.response.status : 'No status');
+      
       setCampaigns([]);
       setLoadingCampaigns(false);
     }

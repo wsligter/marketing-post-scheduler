@@ -48,12 +48,26 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, rememberMe = false) => {
     setLoading(true);
     setError(null);
+    console.log('Attempting login for:', email);
+    
     try {
       // Use regular axios for login since we don't have a token yet
+      console.log('Making login request to:', `${API_URL}/api/users/login`);
       const response = await axios.post(`${API_URL}/api/users/login`, { email, password });
+      
+      console.log('Login response:', response);
+      console.log('Token in response:', response.data.token ? 'Token exists' : 'No token');
+      
+      if (!response.data.token) {
+        console.error('No token received in login response!');
+        setError('Authentication failed: No token received');
+        setLoading(false);
+        return false;
+      }
       
       // Store token in localStorage
       localStorage.setItem('token', response.data.token);
+      console.log('Token stored in localStorage');
       
       // If remember me is checked, save email to localStorage
       if (rememberMe) {
@@ -62,24 +76,33 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('rememberedEmail');
       }
       
+      console.log('Response data structure:', Object.keys(response.data));
+      
       // Make sure we have the user data in the response
       if (!response.data.user && response.data._id) {
         // If user data is directly in the response
+        console.log('User data directly in response');
         setUser(response.data);
       } else if (response.data.user) {
         // If user data is nested in a user property
+        console.log('User data in user property');
         setUser(response.data.user);
       } else {
         // Fetch user profile if not included in login response
+        console.log('No user data in response, fetching profile...');
         // Use our API utility which will automatically include the token
         try {
           const profileResponse = await api.get('/api/users/profile');
+          console.log('Profile response:', profileResponse);
           setUser(profileResponse.data);
         } catch (profileErr) {
           console.error('Error fetching profile after login:', profileErr);
+          console.error('Profile error details:', profileErr.response ? profileErr.response.data : 'No response data');
           // Still consider login successful if we have a token
         }
       }
+      
+      console.log('Final user state after login:', user);
       
       return true;
     } catch (err) {

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Campaign = require('../models/Campaign');
 const Post = require('../models/Post');
+const { requireAuth } = require('../middleware/auth');
 
 // Get all campaigns
-router.get('/', async (req, res) => {
+router.get('/', requireAuth, async (req, res) => {
   try {
     const campaigns = await Campaign.find();
     res.json(campaigns);
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new campaign
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const campaign = new Campaign(req.body);
     const newCampaign = await campaign.save();
@@ -25,7 +26,7 @@ router.post('/', async (req, res) => {
 });
 
 // Get a specific campaign
-router.get('/:id', async (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
     const campaign = await Campaign.findById(req.params.id);
     if (!campaign) return res.status(404).json({ message: 'Campaign not found' });
@@ -36,7 +37,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update a campaign
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const { name, status } = req.body;
     
@@ -54,7 +55,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a campaign
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const campaign = await Campaign.findByIdAndDelete(req.params.id);
     if (!campaign) return res.status(404).json({ message: 'Campaign not found' });

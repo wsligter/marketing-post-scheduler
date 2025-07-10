@@ -235,67 +235,109 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!content.trim()) {
+    // Validate form
+    if (!content) {
       setError('Post content is required');
       return;
     }
-
+    
+    setLoading(true);
+    setError(null);
+    console.log('Submitting post form...');
+    console.log('Auth token:', localStorage.getItem('token'));
+    
     try {
-      setLoading(true);
-      setError(null);
-      
-      // Create a FormData object to send the post data including the image
+      // Create FormData object to handle file upload
       const formData = new FormData();
       formData.append('content', content);
+      console.log('Post content:', content);
       
       // Set the time to the start of the day (midnight) since we only collect the date
       let dateToSubmit = new Date(scheduledDate);
       dateToSubmit.setHours(0, 0, 0, 0);
+      console.log('Scheduled date:', dateToSubmit.toISOString());
       
       formData.append('scheduledDate', dateToSubmit.toISOString());
       
       // Add campaign if selected
       if (selectedCampaign && selectedCampaign !== 'none') {
+        console.log('Selected campaign:', selectedCampaign);
         formData.append('campaign', selectedCampaign);
+      } else {
+        console.log('No campaign selected');
       }
       
       if (image) {
+        console.log('Image attached:', image.name, image.type, image.size);
         formData.append('image', image);
+      } else {
+        console.log('No image attached');
       }
       
       // If editing and the removeImage flag is set, tell the server to remove the image
       if (isEditing && removeImage) {
+        console.log('Removing existing image');
         formData.append('removeImage', 'true');
+      }
+      
+      // Log all form data entries
+      console.log('Form data entries:');
+      for (let pair of formData.entries()) {
+        if (pair[0] === 'image') {
+          console.log(pair[0], 'File object');
+        } else {
+          console.log(pair[0], pair[1]);
+        }
       }
       
       let response;
       
       if (isEditing) {
         // Update existing post
-        response = await api.put(`/api/posts/${editingPost._id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+        console.log('Updating existing post:', editingPost._id);
+        try {
+          response = await api.put(`/api/posts/${editingPost._id}`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          console.log('Update post response:', response);
+          
+          // Notify parent component that post was updated
+          if (onPostUpdated) {
+            console.log('Calling onPostUpdated with:', response.data);
+            onPostUpdated(response.data);
           }
-        });
-        
-        // Notify parent component that post was updated
-        if (onPostUpdated) {
-          onPostUpdated(response.data);
+          
+          // Clear editing state
+          setEditingPost(null);
+        } catch (updateErr) {
+          console.error('Error updating post:', updateErr);
+          console.error('Update error details:', updateErr.response ? updateErr.response.data : 'No response data');
+          throw updateErr; // Re-throw to be caught by outer catch
         }
-        
-        // Clear editing state
-        setEditingPost(null);
       } else {
         // Create new post
-        response = await api.post('/api/posts', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
+        console.log('Creating new post');
+        try {
+          response = await api.post('/api/posts', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          });
+          
+          console.log('Create post response:', response);
+          
+          // Notify parent component that post was created
+          if (onPostCreated) {
+            console.log('Calling onPostCreated with:', response.data);
+            onPostCreated(response.data);
           }
-        });
-        
-        // Notify parent component that post was created
-        if (onPostCreated) {
-          onPostCreated(response.data);
+        } catch (createErr) {
+          console.error('Error creating post:', createErr);
+          console.error('Create error details:', createErr.response ? createErr.response.data : 'No response data');
+          throw createErr; // Re-throw to be caught by outer catch
         }
       }
       

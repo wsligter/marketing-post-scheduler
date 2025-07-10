@@ -1,8 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import config from '../config';
 
-// Get API URL from environment variable or use default
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002';
+// Get API URL from config file
+const API_URL = config.apiUrl;
 
 // Create the auth context
 export const AuthContext = createContext();

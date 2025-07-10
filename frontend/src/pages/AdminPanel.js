@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import LoadingSpinner from '../components/common/LoadingSpinner';
 import '../styles/AdminPanel.css';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import config from '../config';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002';
+// API URL from config
+const API_URL = config.apiUrl;
 
 // Helper function to format dates in Europe/Amsterdam timezone with DD-MM-YYYY HH:mm format
 const formatDate = (dateString) => {

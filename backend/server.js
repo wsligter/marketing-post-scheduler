@@ -78,6 +78,21 @@ app.use('/api/users', usersRoutes);
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Serve static files from React app in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  const frontendBuildPath = path.resolve(__dirname, '../frontend/build');
+  app.use(express.static(frontendBuildPath));
+
+  // Handle any requests that don't match the API routes
+  app.get('*', (req, res) => {
+    // Exclude API routes from being redirected to the React app
+    if (!req.path.startsWith('/api/')) {
+      res.sendFile(path.resolve(frontendBuildPath, 'index.html'));
+    }
+  });
+}
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

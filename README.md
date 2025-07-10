@@ -211,6 +211,20 @@ If you're having trouble connecting to MongoDB Atlas:
 4. View logs if needed: `just logs-follow`
 5. Stop the application when done: `just stop`
 
+## Deployment
+
+### Deploying to Render
+
+This application is ready to be deployed to Render. Follow these steps:
+
+1. Create a Render account at [render.com](https://render.com)
+2. Connect your repository to Render
+3. Create a new Blueprint instance pointing to your repository
+4. Render will automatically detect the `render.yaml` file and create the services
+5. Configure the required environment variables in the Render dashboard
+
+For detailed deployment instructions, see [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md).
+
 ## License
 
 MIT

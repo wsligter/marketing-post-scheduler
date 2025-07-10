@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
+import config from '../../config';
 import { Modal } from '../common';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -48,8 +49,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
           // Create thumbnail from remote image
           createRemoteImageThumbnail(editingPost.imageUrl);
         } else {
-          const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-          createRemoteImageThumbnail(`${apiUrl}${editingPost.imageUrl}`);
+          createRemoteImageThumbnail(`${config.apiUrl}${editingPost.imageUrl}`);
         }
       } else {
         setImagePreview(null);
@@ -115,12 +115,12 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   const fetchCampaigns = async () => {
     try {
       setLoadingCampaigns(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      const response = await axios.get(`${apiUrl}/api/campaigns`);
-      setCampaigns(response.data);
+      const response = await api.get('/api/campaigns');
+      setCampaigns(Array.isArray(response.data) ? response.data : []);
       setLoadingCampaigns(false);
     } catch (err) {
       console.error('Error fetching campaigns:', err);
+      setCampaigns([]);
       setLoadingCampaigns(false);
     }
   };
@@ -128,11 +128,11 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   // Fetch scheduled posts from API
   const fetchScheduledPosts = async () => {
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      const response = await axios.get(`${apiUrl}/api/posts`);
-      setScheduledPosts(response.data);
+      const response = await api.get('/api/posts?status=scheduled');
+      setScheduledPosts(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       console.error('Error fetching scheduled posts:', err);
+      setScheduledPosts([]);
     }
   };
   
@@ -215,8 +215,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     
     try {
       setDeleteLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      await axios.delete(`${apiUrl}/api/posts/${editingPost._id}`);
+      await api.delete(`/api/posts/${editingPost._id}`);
       
       if (onDeletePost) {
         onDeletePost(editingPost._id);
@@ -269,12 +268,11 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         formData.append('removeImage', 'true');
       }
       
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       let response;
       
       if (isEditing) {
         // Update existing post
-        response = await axios.put(`${apiUrl}/api/posts/${editingPost._id}`, formData, {
+        response = await api.put(`/api/posts/${editingPost._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -289,7 +287,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         setEditingPost(null);
       } else {
         // Create new post
-        response = await axios.post(`${apiUrl}/api/posts`, formData, {
+        response = await api.post('/api/posts', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

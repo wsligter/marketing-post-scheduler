@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { CampaignForm, CampaignsList } from '../components/campaigns';
-import config from '../config';
+import api from '../utils/api';
 import '../styles/campaigns.css';
 
 function CampaignsPage() {
@@ -17,7 +16,7 @@ function CampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${config.apiUrl}/api/campaigns`);
+      const response = await api.get('/api/campaigns');
       // Ensure we always set campaigns as an array
       setCampaigns(Array.isArray(response.data) ? response.data : []);
       setLoading(false);

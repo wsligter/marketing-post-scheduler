@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../config';
+import api from '../utils/api';
 
 // Get API URL from config file
 const API_URL = config.apiUrl;
@@ -25,11 +26,8 @@ export const AuthProvider = ({ children }) => {
           return;
         }
         
-        // Set the authorization header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        // Fetch user profile
-        const response = await axios.get(`${API_URL}/api/users/profile`);
+        // Fetch user profile using our API utility (which automatically adds the token)
+        const response = await api.get('/api/users/profile');
         
         // Set user state
         setUser(response.data);
@@ -51,6 +49,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
+      // Use regular axios for login since we don't have a token yet
       const response = await axios.post(`${API_URL}/api/users/login`, { email, password });
       
       // Store token in localStorage
@@ -63,9 +62,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('rememberedEmail');
       }
       
-      // Set token in axios default headers
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-      
       // Make sure we have the user data in the response
       if (!response.data.user && response.data._id) {
         // If user data is directly in the response
@@ -75,8 +71,9 @@ export const AuthProvider = ({ children }) => {
         setUser(response.data.user);
       } else {
         // Fetch user profile if not included in login response
+        // Use our API utility which will automatically include the token
         try {
-          const profileResponse = await axios.get(`${API_URL}/api/users/profile`);
+          const profileResponse = await api.get('/api/users/profile');
           setUser(profileResponse.data);
         } catch (profileErr) {
           console.error('Error fetching profile after login:', profileErr);
@@ -97,7 +94,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.put(`${API_URL}/api/users/profile`, userData);
+      // Use our API utility which will automatically include the token
+      const response = await api.put('/api/users/profile', userData);
       
       // Update user state with new data
       setUser(response.data);
@@ -115,7 +113,8 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_URL}/api/users/register`, userData);
+      // Use our API utility which will automatically include the token
+      const response = await api.post('/api/users/register', userData);
       const { token, user } = response.data;
       
       // Save token to local storage
@@ -143,11 +142,6 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Remove token from local storage
     localStorage.removeItem('token');
-    
-    // Remove authorization header
-    delete axios.defaults.headers.common['Authorization'];
-    
-    // Clear user state
     setUser(null);
   };
 

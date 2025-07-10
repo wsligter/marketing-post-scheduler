@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { PostForm, PostsList } from '../components/posts';
 import '../styles/posts.css';
 
@@ -23,10 +23,11 @@ const PostSchedulerPage = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      const response = await axios.get(`${apiUrl}/api/posts`);
+      const response = await api.get('/api/posts');
+      // Ensure we have an array of posts
+      const postsArray = Array.isArray(response.data) ? response.data : [];
       // Sort posts by scheduledDate (ascending order - earliest first)
-      const sortedPosts = response.data.sort((a, b) => 
+      const sortedPosts = postsArray.sort((a, b) => 
         new Date(a.scheduledDate) - new Date(b.scheduledDate)
       );
       setAllPosts(sortedPosts);
@@ -37,6 +38,8 @@ const PostSchedulerPage = () => {
     } catch (err) {
       console.error('Error fetching posts:', err);
       setError('Failed to load posts. Please try again later.');
+      setAllPosts([]);
+      setPosts([]);
       setLoading(false);
     }
   };
@@ -44,12 +47,13 @@ const PostSchedulerPage = () => {
   const fetchCampaigns = async () => {
     try {
       setLoadingCampaigns(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      const response = await axios.get(`${apiUrl}/api/campaigns`);
-      setCampaigns(response.data);
+      const response = await api.get('/api/campaigns');
+      // Ensure we have an array of campaigns
+      setCampaigns(Array.isArray(response.data) ? response.data : []);
       setLoadingCampaigns(false);
     } catch (err) {
       console.error('Error fetching campaigns:', err);
+      setCampaigns([]);
       setLoadingCampaigns(false);
     }
   };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api';
 import { Modal } from '../common';
 // Using consolidated campaigns.css from styles directory
 
@@ -39,13 +39,12 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
     setError(null);
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       let response;
 
       if (editingCampaign) {
         // Update existing campaign
-        response = await axios.put(
-          `${apiUrl}/api/campaigns/${editingCampaign._id}`, 
+        response = await api.put(
+          `/api/campaigns/${editingCampaign._id}`, 
           formData
         );
         
@@ -56,7 +55,7 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
         setEditingCampaign(null);
       } else {
         // Create new campaign
-        response = await axios.post(`${apiUrl}/api/campaigns`, formData);
+        response = await api.post('/api/campaigns', formData);
         
         if (onCampaignCreated) {
           onCampaignCreated(response.data);
@@ -89,8 +88,7 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
     
     try {
       setDeleteLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      await axios.delete(`${apiUrl}/api/campaigns/${editingCampaign._id}`);
+      await api.delete(`/api/campaigns/${editingCampaign._id}`);
       
       if (onDeleteCampaign) {
         onDeleteCampaign(editingCampaign._id);

@@ -6,17 +6,46 @@ import '../styles/AdminPanel.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002';
 
+// Helper function to format dates in Europe/Amsterdam timezone with DD-MM-YYYY HH:mm format
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  
+  try {
+    const date = new Date(dateString);
+    
+    // Check if date is valid
+    if (isNaN(date.getTime())) return 'N/A';
+    
+    // Format in Europe/Amsterdam timezone (UTC+2 in summer, UTC+1 in winter)
+    const options = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Amsterdam'
+    };
+    
+    return new Intl.DateTimeFormat('nl-NL', options).format(date);
+  } catch (error) {
+    console.error('Date formatting error:', error);
+    return 'N/A';
+  }
+};
+
 const AdminPanel = () => {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
+  const [addingUser, setAddingUser] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    role: 'view-only'
+    role: 'view-only',
+    password: ''
   });
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -53,8 +82,16 @@ const AdminPanel = () => {
 
   const handleCancelEdit = () => {
     setEditingUser(null);
+    setAddingUser(false);
     setSuccessMessage('');
     setError(null);
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      role: 'view-only',
+      password: ''
+    });
   };
 
   const handleInputChange = (e) => {
@@ -72,18 +109,42 @@ const AdminPanel = () => {
     setSuccessMessage('');
 
     try {
-      const response = await axios.put(
-        `${API_URL}/api/users/${editingUser._id}`,
-        formData
-      );
-      
-      // Update the users list with the updated user
-      setUsers(users.map(u => u._id === editingUser._id ? response.data : u));
-      setSuccessMessage('User updated successfully');
-      setEditingUser(null);
+      if (editingUser) {
+        // Update existing user
+        const updateData = { ...formData };
+        delete updateData.password; // Remove password from update data
+        
+        const response = await axios.put(
+          `${API_URL}/api/users/${editingUser._id}`,
+          updateData
+        );
+        
+        // Update the users list with the updated user
+        setUsers(users.map(u => u._id === editingUser._id ? response.data : u));
+        setSuccessMessage('User updated successfully');
+        setEditingUser(null);
+      } else if (addingUser) {
+        // Create new user
+        const response = await axios.post(
+          `${API_URL}/api/users/register`,
+          formData
+        );
+        
+        // Add the new user to the list
+        setUsers([...users, response.data]);
+        setSuccessMessage('User created successfully');
+        setAddingUser(false);
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          role: 'view-only',
+          password: ''
+        });
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update user');
-      console.error('Error updating user:', err);
+      setError(err.response?.data?.message || 'Failed to save user');
+      console.error('Error saving user:', err);
     } finally {
       setLoading(false);
     }
@@ -123,6 +184,20 @@ const AdminPanel = () => {
       </div>
     );
   }
+
+  const handleAddUserClick = () => {
+    setAddingUser(true);
+    setEditingUser(null);
+    setFormData({
+      firstName: '',
+      lastName: '',
+      email: '',
+      role: 'view-only',
+      password: ''
+    });
+    setSuccessMessage('');
+    setError(null);
+  };
 
   return (
     <div className="admin-container">
@@ -205,10 +280,99 @@ const AdminPanel = () => {
               </div>
             </form>
           </div>
+        ) : addingUser ? (
+          <div className="add-user-form">
+            <h3>Add New User</h3>
+            <form onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="firstName">First Name</label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="lastName">Last Name</label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  minLength="6"
+                />
+                <small className="form-text">Password must be at least 6 characters</small>
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="role">Role</label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="admin">Admin</option>
+                  <option value="editor">Editor</option>
+                  <option value="reviewer">Reviewer</option>
+                  <option value="view-only">View Only</option>
+                </select>
+              </div>
+              
+              <div className="form-actions">
+                <button type="submit" className="btn-primary" disabled={loading}>
+                  {loading ? 'Creating...' : 'Create User'}
+                </button>
+                <button 
+                  type="button" 
+                  className="btn-secondary" 
+                  onClick={handleCancelEdit}
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         ) : (
           <>
             <div className="users-header">
               <h3>Users</h3>
+              <button className="btn-add" onClick={handleAddUserClick}>
+                + Add New User
+              </button>
             </div>
             
             {loading && <LoadingSpinner size="medium" text="Loading users..." />}
@@ -239,7 +403,7 @@ const AdminPanel = () => {
                             {user.role}
                           </span>
                         </td>
-                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>{formatDate(user.createdAt)}</td>
                         <td>
                           <div className="action-buttons">
                             <button 

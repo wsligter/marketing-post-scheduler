@@ -30,7 +30,7 @@ services:
         fromService:
           name: marketing-tool-frontend
           type: web
-          property: url
+          property: host
 
   - type: web
     name: marketing-tool-frontend
@@ -46,4 +46,4 @@ services:
         fromService:
           name: marketing-tool-backend
           type: web
-          property: url
+          property: host

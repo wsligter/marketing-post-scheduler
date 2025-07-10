@@ -3,6 +3,7 @@
   --kodify-orange-hover: #ffa01f;
   --kodify-blue: #0C4399;
   --kodify-blue-hover: #0a3780;
+  --kodify-blue-light: #1a51a7;
   --kodify-black: #000;
   --kodify-white: #fff;
   --danger-color: #f44336;
@@ -24,13 +25,23 @@
 }
 
 .App-header {
-  background-color: var(--kodify-blue);
-  padding: 10px;
   color: var(--kodify-white);
   border-radius: 8px;
   margin-bottom: 10px;
-  text-align: center;
   box-shadow: var(--shadow);
+  position: relative;
+}
+
+.header-top {
+  background-color: var(--kodify-blue);
+  padding: 10px;
+  text-align: center;
+}
+
+.header-nav {
+  background-color: var(--kodify-blue-light);
+  padding: 10px;
+  text-align: center;
   position: relative;
 }
 
@@ -53,11 +64,15 @@
   font-weight: 700;
 }
 
+.main-nav {
+  padding: 0;
+}
+
 .main-nav ul {
   display: flex;
   list-style: none;
   padding: 0;
-  margin: 15px 0 0;
+  margin: 0;
   justify-content: center;
   position: relative;
   width: 100%;
@@ -86,6 +101,12 @@
 .main-nav a:hover {
   background-color: rgba(255, 255, 255, 0.2);
   color: var(--kodify-orange);
+}
+
+.main-nav a.active-link {
+  color: var(--kodify-orange);
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0);
 }
 
 main {

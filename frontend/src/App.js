@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate } from 'react-router-dom';
 import './App.css';
 import './styles/UserMenu.css';
 import './styles/AdminPanel.css';
@@ -17,30 +17,35 @@ function AppContent() {
   return (
     <div className="App">
       <header className="App-header">
-        <div className="brand-container">
-          <img src={logo} alt="KODIFY Logo" className="brand-logo" />
-          <h1> Marketing Scheduler</h1>
+        <div className="header-top">
+          <div className="brand-container">
+            <img src={logo} alt="KODIFY Logo" className="brand-logo" />
+            <h1> Marketing Scheduler</h1>
+          </div>
         </div>
+        
         {user ? (
-          <nav className="main-nav">
-            <ul>
-              <li>
-                <Link to="/campaigns">Campaigns</Link>
-              </li>
-              <li>
-                <Link to="/social-media">Post Scheduler</Link>
-              </li>
-              <li className="user-menu">
-                <span>{user.firstName} {user.lastName}</span>
-                <div className="user-dropdown">
-                  <div className="user-role">{user.role}</div>
-                  <Link to="/profile">My Profile</Link>
-                  {user.role === 'admin' && <Link to="/admin">Admin Panel</Link>}
-                  <button onClick={logout} className="logout-button">Logout</button>
-                </div>
-              </li>
-            </ul>
-          </nav>
+          <div className="header-nav">
+            <nav className="main-nav">
+              <ul>
+                <li>
+                  <NavLink to="/campaigns" className={({ isActive }) => isActive ? "active-link" : ""}>Campaigns</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/social-media" className={({ isActive }) => isActive ? "active-link" : ""}>Post Scheduler</NavLink>
+                </li>
+                <li className="user-menu">
+                  <span>{user.firstName} {user.lastName}</span>
+                  <div className="user-dropdown">
+                    <div className="user-role">{user.role}</div>
+                    <Link to="/profile">My Profile</Link>
+                    {user.role === 'admin' && <Link to="/admin">Admin Panel</Link>}
+                    <button onClick={logout} className="logout-button">Logout</button>
+                  </div>
+                </li>
+              </ul>
+            </nav>
+          </div>
         ) : null}
       </header>
       

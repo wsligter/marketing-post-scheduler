@@ -14,15 +14,37 @@ const PORT = process.env.PORT || 3002; // Using port 3002 as default
 // Get frontend URL from environment variable or use default values
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
 
+// Log CORS configuration
+console.log('CORS configuration:');
+console.log('- Frontend URL from env:', process.env.FRONTEND_URL || 'not set');
+console.log('- Using frontend URL:', frontendUrl);
+
 // Middleware
 app.use(cors({
   origin: [
     frontendUrl,
-    'http://localhost:3002', 
-    'http://localhost:8081'
+    'http://localhost:3000',  // React dev server default
+    'http://localhost:3001',  // Alternative port
+    'http://localhost:3002',  // Backend port
+    'http://localhost:8080',  // Common frontend port
+    'http://localhost:8081',  // Current frontend port
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:3002',
+    'http://127.0.0.1:8080',
+    'http://127.0.0.1:8081'
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
 }));
+
+// Log all incoming requests for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log('Headers:', JSON.stringify(req.headers));
+  next();
+});
 app.use(express.json());
 
 // Connect to MongoDB Atlas

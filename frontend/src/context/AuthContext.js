@@ -66,8 +66,14 @@ export const AuthProvider = ({ children }) => {
       }
       
       // Store token in localStorage
+      console.log('Token to store:', response.data.token);
+      console.log('Token length:', response.data.token ? response.data.token.length : 0);
       localStorage.setItem('token', response.data.token);
-      console.log('Token stored in localStorage');
+      
+      // Verify token was stored correctly
+      const storedToken = localStorage.getItem('token');
+      console.log('Token stored in localStorage:', storedToken ? 'Yes' : 'No');
+      console.log('Stored token matches original:', storedToken === response.data.token);
       
       // If remember me is checked, save email to localStorage
       if (rememberMe) {

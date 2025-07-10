@@ -1,10 +1,30 @@
 import axios from 'axios';
 import config from '../config';
 
+// Log the API URL being used
+console.log('API Configuration:', {
+  configApiUrl: config.apiUrl,
+  envApiUrl: process.env.REACT_APP_API_URL,
+  nodeEnv: process.env.NODE_ENV
+});
+
+// Make sure the API URL includes the protocol
+let baseURL = config.apiUrl;
+if (!baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
+  baseURL = `http://${baseURL}`;
+}
+
 // Create an axios instance with base URL from config
 const api = axios.create({
-  baseURL: config.apiUrl
+  baseURL: baseURL,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',  // This helps identify AJAX requests
+    'Accept': 'application/json'  // Explicitly request JSON responses
+  }
 });
+
+console.log('Axios instance created with baseURL:', baseURL);
 
 // Add request interceptor to include auth token in all requests
 api.interceptors.request.use(

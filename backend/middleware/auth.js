@@ -14,8 +14,16 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Middleware to check if the user is authenticated
 exports.requireAuth = async (req, res, next) => {
-  console.log('Auth middleware called for path:', req.path, 'method:', req.method);
-  console.log('Headers:', JSON.stringify(req.headers));
+  console.log('=== AUTH MIDDLEWARE START ===');
+  console.log(`Auth middleware called for ${req.method} ${req.path}`);
+  console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+  console.log('Request origin:', req.headers.origin || 'No origin header');
+  console.log('Request host:', req.headers.host || 'No host header');
+  
+  // Check if the request is coming from a browser or API client
+  const isAPIRequest = req.headers['x-requested-with'] === 'XMLHttpRequest' || 
+                       req.headers['accept']?.includes('application/json');
+  console.log('Is API request:', isAPIRequest ? 'Yes' : 'No');
   
   try {
     // Get token from the Authorization header
@@ -23,36 +31,66 @@ exports.requireAuth = async (req, res, next) => {
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       console.log('No valid Authorization header found');
-      return res.status(401).json({ message: 'Authentication required. No token provided.' });
+      console.log('Auth header value:', authHeader || 'undefined');
+      return res.status(401).json({ 
+        message: 'Authentication required. No token provided.',
+        error: 'missing_token'
+      });
     }
     
     // Extract the token
     const token = authHeader.split(' ')[1];
     console.log('Token found, length:', token.length);
-    console.log('Token preview:', token.substring(0, 10) + '...');
+    console.log('Token preview:', token.substring(0, 10) + '...' + token.substring(token.length - 5));
     
     // Verify token
     console.log('Verifying token with JWT_SECRET');
-    const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('Token decoded successfully, user id:', decoded.id);
-    
-    // Find the user
-    console.log('Finding user with id:', decoded.id);
-    const user = await User.findById(decoded.id).select('-hashedPassword -salt');
-    
-    if (!user) {
-      console.log('User not found for id:', decoded.id);
-      return res.status(401).json({ message: 'User not found or token is invalid' });
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      console.log('Token decoded successfully:', decoded);
+      
+      if (!decoded.id) {
+        console.error('Token missing user ID in payload');
+        return res.status(401).json({ 
+          message: 'Invalid token format: missing user ID',
+          error: 'invalid_token_format'
+        });
+      }
+      
+      // Find the user
+      console.log('Finding user with id:', decoded.id);
+      const user = await User.findById(decoded.id).select('-hashedPassword -salt');
+      
+      if (!user) {
+        console.log('User not found for id:', decoded.id);
+        return res.status(401).json({ 
+          message: 'User not found or token is invalid',
+          error: 'user_not_found'
+        });
+      }
+      
+      console.log('User found:', user.email, 'role:', user.role);
+      console.log('Authentication successful');
+      
+      // Add user to request object
+      req.user = user;
+      console.log('=== AUTH MIDDLEWARE END (SUCCESS) ===');
+      next();
+    } catch (jwtError) {
+      console.error('JWT verification error:', jwtError.name, jwtError.message);
+      return res.status(401).json({ 
+        message: 'Token verification failed: ' + jwtError.message,
+        error: 'token_verification_failed'
+      });
     }
-    
-    console.log('User found:', user.email, 'role:', user.role);
-    
-    // Add user to request object
-    req.user = user;
-    next();
   } catch (error) {
     console.error('Auth middleware error:', error.name, error.message);
-    return res.status(401).json({ message: 'Not authorized, token failed' });
+    console.error(error.stack);
+    console.log('=== AUTH MIDDLEWARE END (ERROR) ===');
+    return res.status(401).json({ 
+      message: 'Authentication failed: ' + error.message,
+      error: 'auth_error'
+    });
   }
 };
 

@@ -60,7 +60,7 @@ start backend-port="3002" frontend-port="8081": stop check-ports check-docker
     #!/usr/bin/env bash
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up &
     # Wait for frontend to start (increased delay to ensure app is fully built)
-    sleep 15
+    sleep 45
     # Open browser
     open http://localhost:{{frontend-port}}
 
@@ -70,7 +70,7 @@ start-detached backend-port="3002" frontend-port="8081": stop check-ports check-
     #!/usr/bin/env bash
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up -d
     # Wait for frontend to start (increased delay to ensure app is fully built)
-    sleep 15
+    sleep 45
     # Open browser
     open http://localhost:{{frontend-port}}
 
@@ -85,7 +85,7 @@ start-frontend backend-port="3002" frontend-port="8081": check-docker
     #!/usr/bin/env bash
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up frontend &
     # Wait for frontend to start (increased delay to ensure app is fully built)
-    sleep 15
+    sleep 45
     # Open browser
     open http://localhost:{{frontend-port}}
 
@@ -124,7 +124,7 @@ build-start backend-port="3002" frontend-port="8081": stop check-ports check-doc
     #!/usr/bin/env bash
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up --build &
     # Wait for frontend to start (increased delay to ensure app is fully built)
-    sleep 15
+    sleep 45
     # Open browser
     open http://localhost:{{frontend-port}}
 
@@ -134,7 +134,7 @@ build-start-detached backend-port="3002" frontend-port="8081": stop check-ports 
     #!/usr/bin/env bash
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up --build -d
     # Wait for frontend to start (increased delay to ensure app is fully built)
-    sleep 15
+    sleep 45
     # Open browser
     open http://localhost:{{frontend-port}}
 

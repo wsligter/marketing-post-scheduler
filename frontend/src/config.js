@@ -4,4 +4,7 @@ const config = {
   apiUrl: process.env.REACT_APP_API_URL || 'http://localhost:3002',
 };
 
+// Log the API URL being used
+console.log('Config: Using API URL:', config.apiUrl);
+
 export default config;

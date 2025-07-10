@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import '../styles/AdminPanel.css';
 import LoadingSpinner from '../components/common/LoadingSpinner';
-import config from '../config';
-
-// API URL from config
-const API_URL = config.apiUrl;
+import api from '../utils/api';
 
 // Helper function to format dates in Europe/Amsterdam timezone with DD-MM-YYYY HH:mm format
 const formatDate = (dateString) => {
@@ -60,11 +56,23 @@ const AdminPanel = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get(`${API_URL}/api/users`);
+      console.log('Fetching users with authentication token...');
+      const token = localStorage.getItem('token');
+      console.log('Token exists:', token ? 'Yes' : 'No');
+      
+      // Use api utility which automatically includes the auth token
+      const response = await api.get('/api/users');
+      console.log('Users API response:', response.status, response.statusText);
+      console.log('Users data:', response.data);
+      
       setUsers(response.data);
     } catch (err) {
+      console.error('Error fetching users:', err.message);
+      if (err.response) {
+        console.error('Error status:', err.response.status);
+        console.error('Error data:', err.response.data);
+      }
       setError('Failed to fetch users. Please try again.');
-      console.error('Error fetching users:', err);
     } finally {
       setLoading(false);
     }
@@ -116,8 +124,11 @@ const AdminPanel = () => {
         const updateData = { ...formData };
         delete updateData.password; // Remove password from update data
         
-        const response = await axios.put(
-          `${API_URL}/api/users/${editingUser._id}`,
+        console.log('Updating user:', editingUser._id);
+        console.log('Update data:', updateData);
+        
+        const response = await api.put(
+          `/api/users/${editingUser._id}`,
           updateData
         );
         
@@ -127,8 +138,9 @@ const AdminPanel = () => {
         setEditingUser(null);
       } else if (addingUser) {
         // Create new user
-        const response = await axios.post(
-          `${API_URL}/api/users/register`,
+        console.log('Creating new user:', formData.email);
+        const response = await api.post(
+          '/api/users/register',
           formData
         );
         
@@ -162,7 +174,8 @@ const AdminPanel = () => {
     setSuccessMessage('');
 
     try {
-      await axios.delete(`${API_URL}/api/users/${userId}`);
+      console.log('Deleting user:', userId);
+      await api.delete(`/api/users/${userId}`);
       
       // Remove the deleted user from the list
       setUsers(users.filter(u => u._id !== userId));

@@ -17,26 +17,51 @@ function CampaignsPage() {
     try {
       setLoading(true);
       console.log('Fetching campaigns...');
-      console.log('Auth token:', localStorage.getItem('token'));
+      const token = localStorage.getItem('token');
+      console.log('Auth token exists:', token ? 'Yes' : 'No');
+      console.log('Auth token preview:', token ? `${token.substring(0, 10)}...` : 'None');
+      
+      // Log headers that will be sent
+      console.log('Request will include headers:', {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token.substring(0, 10)}...` : 'None'
+      });
       
       const response = await api.get('/api/campaigns');
       
-      console.log('Campaigns API response:', response);
+      console.log('Campaigns API response status:', response.status);
       console.log('Response data type:', typeof response.data);
       console.log('Is array?', Array.isArray(response.data));
       
+      // Check if we got HTML instead of JSON
+      if (typeof response.data === 'string' && response.data.includes('<!doctype html>')) {
+        console.error('Received HTML instead of JSON. API URL might be incorrect or CORS issue.');
+        console.error('First 100 chars of response:', response.data.substring(0, 100));
+        throw new Error('Received HTML instead of JSON. API URL might be incorrect.');
+      }
+      
       // Ensure we always set campaigns as an array
       const campaignsArray = Array.isArray(response.data) ? response.data : [];
-      console.log('Campaigns array to set:', campaignsArray);
+      console.log('Campaigns array length:', campaignsArray.length);
+      if (campaignsArray.length > 0) {
+        console.log('First campaign sample:', campaignsArray[0]);
+      }
       
       setCampaigns(campaignsArray);
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching campaigns:', err);
-      console.error('Error details:', err.response ? err.response.data : 'No response data');
-      console.error('Error status:', err.response ? err.response.status : 'No status');
+      console.error('Error fetching campaigns:', err.message);
+      if (err.response) {
+        console.error('Error status:', err.response.status);
+        console.error('Error headers:', err.response.headers);
+        console.error('Error data:', typeof err.response.data === 'string' 
+          ? err.response.data.substring(0, 100) + '...' 
+          : err.response.data);
+      } else if (err.request) {
+        console.error('No response received, request was:', err.request);
+      }
       
-      setError('Error fetching campaigns');
+      setError(`Error fetching campaigns: ${err.message}`);
       setCampaigns([]); // Set empty array on error
       setLoading(false);
     }

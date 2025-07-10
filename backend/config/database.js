@@ -12,7 +12,10 @@ const cluster = process.env.MONGO_CLUSTER;
 const appName = process.env.MONGO_APP_NAME;
 
 // Construct the MongoDB URI
-const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}`;
+const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}&connectTimeoutMS=30000&socketTimeoutMS=30000&serverSelectionTimeoutMS=30000`;
+
+// Log connection attempt
+console.log(`Connecting to MongoDB Atlas cluster: ${cluster}`);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {

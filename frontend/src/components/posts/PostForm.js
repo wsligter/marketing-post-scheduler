@@ -48,7 +48,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
           // Create thumbnail from remote image
           createRemoteImageThumbnail(editingPost.imageUrl);
         } else {
-          const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+          const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
           createRemoteImageThumbnail(`${apiUrl}${editingPost.imageUrl}`);
         }
       } else {
@@ -115,7 +115,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   const fetchCampaigns = async () => {
     try {
       setLoadingCampaigns(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       const response = await axios.get(`${apiUrl}/api/campaigns`);
       setCampaigns(response.data);
       setLoadingCampaigns(false);
@@ -128,7 +128,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   // Fetch scheduled posts from API
   const fetchScheduledPosts = async () => {
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       const response = await axios.get(`${apiUrl}/api/posts`);
       setScheduledPosts(response.data);
     } catch (err) {
@@ -215,7 +215,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     
     try {
       setDeleteLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       await axios.delete(`${apiUrl}/api/posts/${editingPost._id}`);
       
       if (onDeletePost) {
@@ -269,7 +269,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         formData.append('removeImage', 'true');
       }
       
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       let response;
       
       if (isEditing) {

@@ -23,7 +23,7 @@ const PostSchedulerPage = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       const response = await axios.get(`${apiUrl}/api/posts`);
       // Sort posts by scheduledDate (ascending order - earliest first)
       const sortedPosts = response.data.sort((a, b) => 
@@ -44,7 +44,7 @@ const PostSchedulerPage = () => {
   const fetchCampaigns = async () => {
     try {
       setLoadingCampaigns(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       const response = await axios.get(`${apiUrl}/api/campaigns`);
       setCampaigns(response.data);
       setLoadingCampaigns(false);

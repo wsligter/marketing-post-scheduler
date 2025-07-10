@@ -8,6 +8,11 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+# Use ARG to accept the port value during build time
+ARG PORT=3002
+# Set ENV variable for runtime
+ENV PORT=$PORT
+# Expose the port dynamically
+EXPOSE $PORT
 
 CMD ["npm", "start"]

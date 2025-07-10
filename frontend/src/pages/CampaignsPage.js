@@ -16,7 +16,7 @@ function CampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       const response = await axios.get(`${apiUrl}/api/campaigns`);
       setCampaigns(response.data);
       setLoading(false);

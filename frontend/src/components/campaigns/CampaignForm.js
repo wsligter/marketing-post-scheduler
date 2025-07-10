@@ -39,7 +39,7 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
     setError(null);
 
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       let response;
 
       if (editingCampaign) {
@@ -89,7 +89,7 @@ const CampaignForm = ({ onCampaignCreated, onCampaignUpdated, editingCampaign, s
     
     try {
       setDeleteLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
       await axios.delete(`${apiUrl}/api/campaigns/${editingCampaign._id}`);
       
       if (onDeleteCampaign) {

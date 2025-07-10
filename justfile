@@ -34,14 +34,14 @@ check-docker:
 # Helper recipe to check and kill processes using ports
 check-ports:
     #!/usr/bin/env bash
-    # Check backend port (3000)
-    echo "Checking for processes using backend port 3000..."
-    if lsof -i :3000 > /dev/null; then
-        echo "Found process using port 3000. Attempting to kill..."
-        lsof -i :3000 -t | xargs kill -9 || true
+    # Check backend port (3002)
+    echo "Checking for processes using backend port 3002..."
+    if lsof -i :3002 > /dev/null; then
+        echo "Found process using port 3002. Attempting to kill..."
+        lsof -i :3002 -t | xargs kill -9 || true
         echo "Process killed."
     else
-        echo "No process found using port 3000."
+        echo "No process found using port 3002."
     fi
     
     # Check frontend port (8081)
@@ -53,41 +53,41 @@ check-ports:
     else
         echo "No process found using port 8081."
     fi
-    
-    # Check MongoDB port (27017)
-    echo "Checking for processes using MongoDB port 27017..."
-    if lsof -i :27017 > /dev/null; then
-        echo "Found process using port 27017. Attempting to kill..."
-        lsof -i :27017 -t | xargs kill -9 || true
-        echo "Process killed."
-    else
-        echo "No process found using port 27017."
-    fi
 
-# Start all containers (stopping any existing ones first)
-# Optional parameters: backend-port, frontend-port, db-port
-start backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports check-docker
-    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up
+# Start all containers (stopping any existing ones first) and open browser
+# Optional parameters: backend-port, frontend-port
+start backend-port="3002" frontend-port="8081": stop check-ports check-docker
+    #!/usr/bin/env bash
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up &
+    # Wait for frontend to start (increased delay to ensure app is fully built)
+    sleep 15
+    # Open browser
+    open http://localhost:{{frontend-port}}
 
-# Start all containers in detached mode (stopping any existing ones first)
-# Optional parameters: backend-port, frontend-port, db-port
-start-detached backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports check-docker
-    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up -d
+# Start all containers in detached mode (stopping any existing ones first) and open browser
+# Optional parameters: backend-port, frontend-port
+start-detached backend-port="3002" frontend-port="8081": stop check-ports check-docker
+    #!/usr/bin/env bash
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up -d
+    # Wait for frontend to start (increased delay to ensure app is fully built)
+    sleep 15
+    # Open browser
+    open http://localhost:{{frontend-port}}
 
 # Start only the backend service
 # Optional parameters: backend-port, frontend-port
-start-backend backend-port="3000" frontend-port="8081": check-docker
+start-backend backend-port="3002" frontend-port="8081": check-docker
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up backend
 
-# Start only the frontend service
+# Start only the frontend service and open browser
 # Optional parameters: backend-port, frontend-port
-start-frontend backend-port="3000" frontend-port="8081": check-docker
-    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up frontend
-
-# Start only the database service
-# Optional parameters: db-port
-start-db db-port="27017": check-docker
-    DB_PORT={{db-port}} docker-compose up db
+start-frontend backend-port="3002" frontend-port="8081": check-docker
+    #!/usr/bin/env bash
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up frontend &
+    # Wait for frontend to start (increased delay to ensure app is fully built)
+    sleep 15
+    # Open browser
+    open http://localhost:{{frontend-port}}
 
 # Stop all containers
 stop:
@@ -114,19 +114,29 @@ logs-follow-service service:
     docker-compose logs -f {{service}}
 
 # Build all containers without starting them
-# Optional parameters: backend-port, frontend-port, db-port
-build backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports check-docker
-    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose build
+# Optional parameters: backend-port, frontend-port
+build backend-port="3002" frontend-port="8081": stop check-ports check-docker
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose build
 
-# Build and start all containers (stopping any existing ones first)
-# Optional parameters: backend-port, frontend-port, db-port
-build-start backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports check-docker
-    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up --build
+# Build and start all containers (stopping any existing ones first) and open browser
+# Optional parameters: backend-port, frontend-port
+build-start backend-port="3002" frontend-port="8081": stop check-ports check-docker
+    #!/usr/bin/env bash
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up --build &
+    # Wait for frontend to start (increased delay to ensure app is fully built)
+    sleep 15
+    # Open browser
+    open http://localhost:{{frontend-port}}
 
-# Build and start all containers in detached mode (stopping any existing ones first)
-# Optional parameters: backend-port, frontend-port, db-port
-build-start-detached backend-port="3000" frontend-port="8081" db-port="27017": stop check-ports check-docker
-    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} DB_PORT={{db-port}} docker-compose up --build -d
+# Build and start all containers in detached mode (stopping any existing ones first) and open browser
+# Optional parameters: backend-port, frontend-port
+build-start-detached backend-port="3002" frontend-port="8081": stop check-ports check-docker
+    #!/usr/bin/env bash
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up --build -d
+    # Wait for frontend to start (increased delay to ensure app is fully built)
+    sleep 15
+    # Open browser
+    open http://localhost:{{frontend-port}}
 
 # Show container status
 status:

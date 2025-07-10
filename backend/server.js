@@ -9,7 +9,7 @@ const { connectToDatabase } = require('./config/database');
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001; // Changed from 3000 to 3001 to avoid conflicts
+const PORT = process.env.PORT || 3002; // Using port 3002 as default
 
 // Get frontend URL from environment variable or use default values
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
@@ -18,8 +18,6 @@ const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
 app.use(cors({
   origin: [
     frontendUrl,
-    'http://localhost:3000', 
-    'http://localhost:3001', 
     'http://localhost:3002', 
     'http://localhost:8081'
   ],
@@ -40,8 +38,8 @@ connectToDatabase()
     const cluster = process.env.MONGO_CLUSTER;
     const appName = process.env.MONGO_APP_NAME;
     
-    // Construct the MongoDB URI for Mongoose
-    const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}`;
+    // Construct the MongoDB URI for Mongoose with additional connection options
+    const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}&connectTimeoutMS=30000&socketTimeoutMS=30000&maxIdleTimeMS=120000&serverSelectionTimeoutMS=30000`;
     
     // Connect Mongoose to the same MongoDB Atlas instance
     return mongoose.connect(uri);
@@ -61,10 +59,12 @@ app.get('/', (req, res) => {
 // Import routes
 const postsRoutes = require('./routes/posts');
 const campaignsRoutes = require('./routes/campaigns');
+const healthRoutes = require('./routes/health');
 
 // Use routes
 app.use('/api/posts', postsRoutes);
 app.use('/api/campaigns', campaignsRoutes);
+app.use('/api/health', healthRoutes);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

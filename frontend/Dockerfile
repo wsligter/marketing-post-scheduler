@@ -13,6 +13,6 @@ RUN npm cache clean --force && \
 # Copy the rest of the application
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8081
 
 CMD ["npm", "start"]

@@ -37,8 +37,8 @@ npm start
 
 ### Access the Application
 
-- **Frontend:** http://localhost:8081
-- **Backend API:** http://localhost:3000
+- **Frontend:** [http://localhost:8081](http://localhost:8081)
+- **Backend API:** [http://localhost:3002](http://localhost:3002)
 - **MongoDB:** mongodb://localhost:27017/marketingapp
 
 ## Features
@@ -62,7 +62,7 @@ npm start
 
 ## Project Structure
 
-```plaintext
+```text
 marketing_tool/
 ├── backend/           # Express.js API
 │   ├── routes/        # API routes
@@ -85,7 +85,7 @@ marketing_tool/
 
 ### Backend (.env)
 
-```
+```env
 # MongoDB Atlas Configuration
 MONGO_USERNAME=your_username
 MONGO_PASSWORD=your_password
@@ -98,13 +98,13 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
 # Server Configuration
-PORT=3000
+PORT=3002
 ```
 
 ### Frontend (.env)
 
-```
-REACT_APP_API_URL=http://localhost:3000
+```env
+REACT_APP_API_URL=http://localhost:3002
 ```
 
 ## Database Setup
@@ -156,6 +156,7 @@ If you have [Just](https://github.com/casey/just#installation) installed:
 just
 
 # Common commands
+
 just start              # Start all containers
 just start-detached     # Start in background
 just stop               # Stop all containers
@@ -169,6 +170,7 @@ just bump-patch         # Increment patch version (1.0.0 -> 1.0.1)
 just bump-minor         # Increment minor version (1.0.0 -> 1.1.0)
 just bump-major         # Increment major version (1.0.0 -> 2.0.0)
 just version-bump patch # Alternative way to bump version
+
 ```
 
 ## Troubleshooting
@@ -176,7 +178,8 @@ just version-bump patch # Alternative way to bump version
 ### Port Conflicts
 
 The application uses the following ports:
-- Backend: 3000
+
+- Backend: 3002
 - Frontend: 8081
 - MongoDB: 27017
 
@@ -196,7 +199,9 @@ If you're having trouble connecting to MongoDB Atlas:
 
 1. Verify your MongoDB Atlas credentials in the backend `.env` file
 2. Check that your IP address is whitelisted in the MongoDB Atlas dashboard
-3. Run the test connection script: `node backend/utils/test-mongodb-connection.js`
+3. Make sure the `NODE_ENV` is set to `development` in docker-compose.yml
+4. Ensure you're using the standard SRV connection string format in database.js
+5. Run the test connection script: `node backend/utils/test-mongodb-connection.js`
 
 ## Development Workflow
 

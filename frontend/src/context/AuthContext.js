@@ -66,8 +66,24 @@ export const AuthProvider = ({ children }) => {
       // Set token in axios default headers
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
       
-      // Update state
-      setUser(response.data);
+      // Make sure we have the user data in the response
+      if (!response.data.user && response.data._id) {
+        // If user data is directly in the response
+        setUser(response.data);
+      } else if (response.data.user) {
+        // If user data is nested in a user property
+        setUser(response.data.user);
+      } else {
+        // Fetch user profile if not included in login response
+        try {
+          const profileResponse = await axios.get(`${API_URL}/api/users/profile`);
+          setUser(profileResponse.data);
+        } catch (profileErr) {
+          console.error('Error fetching profile after login:', profileErr);
+          // Still consider login successful if we have a token
+        }
+      }
+      
       return true;
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to login');

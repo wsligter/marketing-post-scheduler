@@ -1,6 +1,8 @@
 import React from 'react';
 
-const CampaignsList = ({ campaigns, loading, error, onEditCampaign, onDeleteCampaign }) => {
+const CampaignsList = ({ campaigns = [], loading, error, onEditCampaign, onDeleteCampaign }) => {
+  // Ensure campaigns is always an array
+  const campaignsArray = Array.isArray(campaigns) ? campaigns : [];
   const handleEditClick = (campaign) => {
     if (onEditCampaign) {
       onEditCampaign(campaign);
@@ -17,13 +19,13 @@ const CampaignsList = ({ campaigns, loading, error, onEditCampaign, onDeleteCamp
     return <div className="error">{error}</div>;
   }
 
-  if (campaigns.length === 0) {
+  if (campaignsArray.length === 0) {
     return <div className="no-campaigns">No campaigns found. Create your first one!</div>;
   }
 
   return (
     <div className="campaigns-grid">
-      {campaigns.map((campaign) => (
+      {campaignsArray.map((campaign) => (
         <div 
           key={campaign._id} 
           className="campaign-card"

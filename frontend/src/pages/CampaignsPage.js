@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { CampaignForm, CampaignsList } from '../components/campaigns';
+import config from '../config';
 import '../styles/campaigns.css';
 
 function CampaignsPage() {
@@ -16,12 +17,13 @@ function CampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3002';
-      const response = await axios.get(`${apiUrl}/api/campaigns`);
-      setCampaigns(response.data);
+      const response = await axios.get(`${config.apiUrl}/api/campaigns`);
+      // Ensure we always set campaigns as an array
+      setCampaigns(Array.isArray(response.data) ? response.data : []);
       setLoading(false);
     } catch (err) {
       setError('Error fetching campaigns');
+      setCampaigns([]); // Set empty array on error
       setLoading(false);
       console.error('Error fetching campaigns:', err);
     }
@@ -68,7 +70,7 @@ function CampaignsPage() {
           <div className="posts-list">
             <h2>Your Campaigns</h2>
             <CampaignsList 
-              campaigns={campaigns}
+              campaigns={campaigns || []}
               loading={loading}
               error={error}
               onEditCampaign={handleEditCampaign}

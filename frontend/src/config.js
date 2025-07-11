@@ -4,9 +4,14 @@ const config = {
   apiUrl: process.env.REACT_APP_API_URL || 'http://localhost:3002',
 };
 
-// Fix for Render deployment where service name might be used instead of full URL
-if (config.apiUrl === 'marketing-tool-backend') {
-  config.apiUrl = 'https://marketing-tool-backend.onrender.com';
+// For single service deployment, use relative URL if we're in production
+if (process.env.NODE_ENV === 'production') {
+  // Check if we're using a placeholder or empty value
+  if (config.apiUrl === '%REACT_APP_API_URL%' || !config.apiUrl || config.apiUrl === 'marketing-tool-backend') {
+    // For single service deployment, API is at the same domain, just use relative path
+    config.apiUrl = '';
+    console.log('Single service deployment detected, using relative API URL');
+  }
 }
 
 // Log detailed API configuration for debugging

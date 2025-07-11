@@ -13,14 +13,28 @@ console.log('API Configuration:', {
   nodeEnv: process.env.NODE_ENV
 });
 
-// Make sure the API URL includes the protocol
+// Handle API URL for different deployment scenarios
 let baseURL = config.apiUrl;
 
-// Special case for Render deployment
-if (baseURL === 'marketing-tool-backend') {
-  baseURL = 'https://marketing-tool-backend.onrender.com';
-  console.log('Detected Render service name, using full URL:', baseURL);
-} else if (!baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
+// For single service deployment
+if (baseURL === '') {
+  // Empty baseURL means we're using the same domain (single service deployment)
+  console.log('Using relative API URL for single service deployment');
+  baseURL = '/api'; // Just use the /api path without domain
+}
+// Special case for Render deployment with separate services
+else if (baseURL === 'marketing-tool-backend' || baseURL === '%REACT_APP_API_URL%') {
+  // If we're accessing the single service deployment on Render
+  if (window.location.hostname.includes('render.com')) {
+    baseURL = '';
+    console.log('Detected Render single service deployment, using relative URL');
+  } else {
+    baseURL = 'https://marketing-tool-free-tier.onrender.com';
+    console.log('Using hardcoded Render URL:', baseURL);
+  }
+}
+// Add protocol if missing and not using relative URL
+else if (baseURL !== '' && !baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
   baseURL = `http://${baseURL}`;
   console.log('Added http:// protocol to URL:', baseURL);
 }

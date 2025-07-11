@@ -56,8 +56,8 @@ function AppContent() {
         {/* Public routes */}
         <Route path="/login" element={user ? <Navigate to="/campaigns" /> : <LoginPage />} />
         
-        {/* Default route redirects to campaigns */}
-        <Route path="/" element={<Navigate to="/campaigns" />} />
+        {/* Default route redirects to login or social posts based on authentication status */}
+        <Route path="/" element={user ? <Navigate to="/social-media" /> : <Navigate to="/login" />} />
         
         {/* Protected routes */}
         <Route path="/campaigns" element={<ProtectedRoute />}>

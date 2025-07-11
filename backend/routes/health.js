@@ -13,12 +13,25 @@ const password = process.env.MONGO_PASSWORD;
 const cluster = process.env.MONGO_CLUSTER;
 const appName = process.env.MONGO_APP_NAME;
 
-// Health check endpoint
+// Simple health check endpoint for quick pings (useful for keeping the service alive)
 router.get('/', async (req, res) => {
   try {
+    // Record the startup time if it's the first request after a cold start
+    if (!global.serverStartTime) {
+      global.serverStartTime = new Date();
+    }
+    
+    const uptime = new Date() - global.serverStartTime;
+    const uptimeMinutes = Math.floor(uptime / 60000);
+    const uptimeSeconds = Math.floor((uptime % 60000) / 1000);
+    
     res.json({
       status: 'ok',
       message: 'Server is running',
+      isProduction: process.env.NODE_ENV === 'production',
+      uptime: `${uptimeMinutes}m ${uptimeSeconds}s`,
+      freeServiceNote: process.env.NODE_ENV === 'production' ? 
+        'This service is running on Render free tier and may sleep after 15 minutes of inactivity' : null,
       env: {
         NODE_ENV: process.env.NODE_ENV,
         // Don't expose sensitive info, just check if they exist

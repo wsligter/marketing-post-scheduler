@@ -5,6 +5,9 @@ const dotenv = require('dotenv');
 const path = require('path');
 const { connectToDatabase } = require('./config/database');
 
+// Determine if we're running in production
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Load environment variables
 dotenv.config();
 
@@ -133,4 +136,16 @@ if (process.env.NODE_ENV === 'production') {
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  
+  // Add startup notification for free tier
+  if (isProduction) {
+    console.log('='.repeat(80));
+    console.log('IMPORTANT: Running on Render free tier');
+    console.log('This service will sleep after 15 minutes of inactivity');
+    console.log('First request after inactivity will take 30-60 seconds to respond');
+    console.log('='.repeat(80));
+    
+    // Record server start time for uptime tracking
+    global.serverStartTime = new Date();
+  }
 });

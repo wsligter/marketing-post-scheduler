@@ -3,12 +3,15 @@ import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate } from 
 import './App.css';
 import './styles/UserMenu.css';
 import './styles/AdminPanel.css';
+import './styles/wakeup-notification.css';
 import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel } from './pages';
 import logo from './assets/logo.svg';
 // Import package.json version
 import packageInfo from '../package.json';
 // Import auth context
 import { AuthProvider, useAuth } from './context/AuthContext';
+// Import loading context for free tier service wakeup notifications
+import { LoadingProvider } from './context/LoadingContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function AppContent() {
@@ -85,12 +88,14 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
-        <footer className="App-footer">
-          <div className="footer-content">
-            <p>Marketing Scheduler v{packageInfo.version} -- Wouter Sligter, 2025</p>
-          </div>
-        </footer>
+        <LoadingProvider>
+          <AppContent />
+          <footer className="App-footer">
+            <div className="footer-content">
+              <p>Marketing Scheduler v{packageInfo.version} -- Wouter Sligter, 2025</p>
+            </div>
+          </footer>
+        </LoadingProvider>
       </AuthProvider>
     </Router>
   );

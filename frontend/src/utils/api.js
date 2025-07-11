@@ -1,6 +1,11 @@
 import axios from 'axios';
 import config from '../config';
 
+// Constants for retry logic
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 5000; // 5 seconds
+const RETRY_STATUS_CODES = [503, 504, 502]; // Service unavailable, Gateway timeout, Bad gateway
+
 // Log the API URL being used
 console.log('API Configuration:', {
   configApiUrl: config.apiUrl,
@@ -57,6 +62,46 @@ api.interceptors.request.use(
   }
 );
 
+// Helper function to wait for a specified delay
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Function to retry API calls when backend is spinning up
+const retryApiCall = async (config, retries = 0) => {
+  try {
+    return await axios(config);
+  } catch (error) {
+    // Check if this is a status code that indicates the service might be spinning up
+    const status = error.response?.status;
+    
+    if (RETRY_STATUS_CODES.includes(status) || !error.response) {
+      // If we haven't exceeded max retries, wait and try again
+      if (retries < MAX_RETRIES) {
+        console.log(`Backend may be spinning up. Retrying in ${RETRY_DELAY/1000}s... (${retries + 1}/${MAX_RETRIES})`);
+        
+        // Show a global notification that the service is waking up
+        if (retries === 0) {
+          // Dispatch a custom event that can be caught by a notification component
+          const event = new CustomEvent('serviceWakingUp', { detail: { isWakingUp: true } });
+          window.dispatchEvent(event);
+        }
+        
+        // Wait for the retry delay
+        await sleep(RETRY_DELAY);
+        
+        // Try again with incremented retry count
+        return retryApiCall(config, retries + 1);
+      }
+      
+      // If we've reached max retries, clear the waking up notification
+      const event = new CustomEvent('serviceWakingUp', { detail: { isWakingUp: false } });
+      window.dispatchEvent(event);
+    }
+    
+    // If it's not a retryable error or we've exceeded retries, reject with the original error
+    throw error;
+  }
+};
+
 // Add response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => {
@@ -70,6 +115,13 @@ api.interceptors.response.use(
       console.log('Object keys:', Object.keys(response.data));
     }
     
+    // Clear any waking up notification on successful response
+    if (window.wakingUpNotificationShown) {
+      const event = new CustomEvent('serviceWakingUp', { detail: { isWakingUp: false } });
+      window.dispatchEvent(event);
+      window.wakingUpNotificationShown = false;
+    }
+    
     return response;
   },
   (error) => {
@@ -79,8 +131,17 @@ api.interceptors.response.use(
       console.error('Error status:', error.response.status);
       console.error('Error data:', error.response.data);
       console.error('Error URL:', error.config.url);
+      
+      // Check if this is a status code that indicates the service might be spinning up
+      if (RETRY_STATUS_CODES.includes(error.response.status)) {
+        console.log('Service may be spinning up, attempting retry...');
+        return retryApiCall(error.config);
+      }
     } else if (error.request) {
       console.error('No response received, request was:', error.request);
+      // No response could mean the service is spinning up
+      console.log('No response received, attempting retry...');
+      return retryApiCall(error.config);
     }
     
     // Handle 401 Unauthorized errors (token expired or invalid)

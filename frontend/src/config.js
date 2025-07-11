@@ -9,9 +9,15 @@ if (process.env.NODE_ENV === 'production') {
   // Check if we're using a placeholder or empty value
   if (config.apiUrl === '%REACT_APP_API_URL%' || !config.apiUrl || config.apiUrl === 'marketing-tool-backend') {
     // For single service deployment, API is at the same domain, just use relative path
-    config.apiUrl = '';
+    config.apiUrl = '/api';
     console.log('Single service deployment detected, using relative API URL');
   }
+}
+
+// Fix URL formatting - ensure we don't have double slashes
+if (config.apiUrl.endsWith('/')) {
+  config.apiUrl = config.apiUrl.slice(0, -1);
+  console.log('Removed trailing slash from API URL');
 }
 
 // Log detailed API configuration for debugging

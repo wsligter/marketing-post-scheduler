@@ -53,17 +53,34 @@ export const AuthProvider = ({ children }) => {
     try {
       // Make sure API_URL is correct
       let loginUrl = API_URL;
+      
+      // Handle special cases for API URL
       if (loginUrl === 'marketing-tool-backend') {
         loginUrl = 'https://marketing-tool-backend.onrender.com';
       }
-      if (!loginUrl.startsWith('http://') && !loginUrl.startsWith('https://')) {
+      
+      // Add protocol if missing
+      if (!loginUrl.startsWith('http://') && !loginUrl.startsWith('https://') && !loginUrl.startsWith('/')) {
         loginUrl = `http://${loginUrl}`;
       }
       
-      console.log('Making login request to:', `${loginUrl}/api/users/login`);
+      // Construct the login endpoint URL
+      let loginEndpoint;
+      if (loginUrl.endsWith('/api')) {
+        // If API_URL already ends with /api, don't add it again
+        loginEndpoint = `${loginUrl}/users/login`;
+      } else if (loginUrl === '/api') {
+        // If it's a relative URL
+        loginEndpoint = `${loginUrl}/users/login`;
+      } else {
+        // Otherwise add /api/
+        loginEndpoint = `${loginUrl}/api/users/login`;
+      }
+      
+      console.log('Making login request to:', loginEndpoint);
       
       // Use regular axios for login since we don't have a token yet
-      const response = await axios.post(`${loginUrl}/api/users/login`, 
+      const response = await axios.post(loginEndpoint, 
         { email, password },
         { 
           headers: {

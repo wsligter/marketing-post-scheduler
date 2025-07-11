@@ -16,27 +16,32 @@ console.log('API Configuration:', {
 // Handle API URL for different deployment scenarios
 let baseURL = config.apiUrl;
 
-// For single service deployment
+// Special cases for API URL
 if (baseURL === '') {
   // Empty baseURL means we're using the same domain (single service deployment)
-  console.log('Using relative API URL for single service deployment');
-  baseURL = '/api'; // Just use the /api path without domain
+  baseURL = '/api';
+  console.log('Empty API URL, using relative path:', baseURL);
 }
-// Special case for Render deployment with separate services
 else if (baseURL === 'marketing-tool-backend' || baseURL === '%REACT_APP_API_URL%') {
   // If we're accessing the single service deployment on Render
   if (window.location.hostname.includes('render.com')) {
-    baseURL = '';
-    console.log('Detected Render single service deployment, using relative URL');
+    baseURL = '/api';
+    console.log('Detected Render deployment, using relative URL:', baseURL);
   } else {
-    baseURL = 'https://marketing-tool-free-tier.onrender.com';
+    baseURL = 'https://marketing-tool-free-tier.onrender.com/api';
     console.log('Using hardcoded Render URL:', baseURL);
   }
 }
 // Add protocol if missing and not using relative URL
-else if (baseURL !== '' && !baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
+else if (!baseURL.startsWith('/') && !baseURL.startsWith('http://') && !baseURL.startsWith('https://')) {
   baseURL = `http://${baseURL}`;
   console.log('Added http:// protocol to URL:', baseURL);
+}
+
+// Ensure no trailing slash to prevent double slashes in requests
+if (baseURL.endsWith('/') && baseURL !== '/') {
+  baseURL = baseURL.slice(0, -1);
+  console.log('Removed trailing slash from baseURL:', baseURL);
 }
 
 // Create an axios instance with base URL from config

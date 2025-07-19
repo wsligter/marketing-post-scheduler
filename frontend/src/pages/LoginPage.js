@@ -66,7 +66,7 @@ const LoginPage = () => {
   return (
     <div className="auth-container">
       <div className="auth-form-container">
-        <h2>Login to Marketing Scheduler</h2>
+        <h2>Login to the Marketing App</h2>
         
         {error && <div className="auth-error">{error}</div>}
         

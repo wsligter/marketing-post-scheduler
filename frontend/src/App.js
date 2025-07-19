@@ -106,7 +106,7 @@ function App() {
           <AppContent />
           <footer className="App-footer">
             <div className="footer-content">
-              <p>Marketing Scheduler v{packageInfo.version} -- Wouter Sligter, 2025</p>
+              <p>Marketing Tool v{packageInfo.version} -- Wouter Sligter, 2025</p>
             </div>
           </footer>
         </LoadingProvider>

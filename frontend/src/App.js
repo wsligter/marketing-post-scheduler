@@ -23,7 +23,7 @@ function AppContent() {
         <div className="header-top">
           <div className="brand-container">
             <img src={logo} alt="KODIFY Logo" className="brand-logo" />
-            <h1>Marketing Calendar</h1>
+            <h1>Welcome</h1>
           </div>
         </div>
         
@@ -91,8 +91,8 @@ function AppContent() {
           <Route index element={<AdminPanel />} />
         </Route>
         
-        {/* Redirect to login if not authenticated */}
-        <Route path="*" element={<Navigate to={user ? "/campaigns" : "/login"} />} />
+        {/* Redirect to dashboard if authenticated, login if not */}
+        <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
       </Routes>
     </div>
   );

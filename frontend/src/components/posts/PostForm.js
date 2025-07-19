@@ -16,14 +16,18 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   const [selectedCampaign, setSelectedCampaign] = useState('none');
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
+  const [selectedUser, setSelectedUser] = useState('none');
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const [scheduledPosts, setScheduledPosts] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [removeImage, setRemoveImage] = useState(false); // Flag to indicate image should be removed
   
-  // Fetch campaigns and scheduled posts when component mounts
+  // Fetch campaigns, users, and scheduled posts when component mounts
   useEffect(() => {
     fetchCampaigns();
+    fetchUsers();
     fetchScheduledPosts();
   }, []);
   
@@ -39,6 +43,13 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         setSelectedCampaign(editingPost.campaign._id);
       } else {
         setSelectedCampaign('none');
+      }
+      
+      // Set assigned user if post has one
+      if (editingPost.assignedUser) {
+        setSelectedUser(editingPost.assignedUser._id);
+      } else {
+        setSelectedUser('none');
       }
       
       // Set image preview if post has an image
@@ -116,12 +127,26 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     try {
       setLoadingCampaigns(true);
       const response = await api.get('/api/campaigns');
-      setCampaigns(Array.isArray(response.data) ? response.data : []);
+      setCampaigns(response.data);
       setLoadingCampaigns(false);
-    } catch (err) {
-      console.error('Error fetching campaigns:', err);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
       setCampaigns([]);
       setLoadingCampaigns(false);
+    }
+  };
+
+  // Fetch users from API for assignment
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const response = await api.get('/api/users/for-assignment');
+      setUsers(response.data);
+      setLoadingUsers(false);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      setUsers([]);
+      setLoadingUsers(false);
     }
   };
 
@@ -141,9 +166,10 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     setScheduledDate(new Date());
     setImage(null);
     setImagePreview(null);
-    setIsEditing(false);
     setError(null);
+    setIsEditing(false);
     setSelectedCampaign('none');
+    setSelectedUser('none');
     setRemoveImage(false);
     
     // Reset the file input element by clearing its value
@@ -265,6 +291,14 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         formData.append('campaign', selectedCampaign);
       } else {
         console.log('No campaign selected');
+      }
+      
+      // Add assigned user if selected
+      if (selectedUser && selectedUser !== 'none') {
+        console.log('Selected user:', selectedUser);
+        formData.append('assignedUser', selectedUser);
+      } else {
+        console.log('No user assigned');
       }
       
       if (image) {
@@ -400,27 +434,48 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
           )}
         </div>
         
-        <div className="form-group">
-          <label htmlFor="campaign">Select Campaign (optional):</label>
-          <select
-            id="campaign"
-            value={selectedCampaign}
-            onChange={(e) => setSelectedCampaign(e.target.value)}
-            className="campaign-select"
-            disabled={loadingCampaigns}
-          >
-            <option value="none">-- No Campaign --</option>
-            {campaigns.map(campaign => (
-              <option key={campaign._id} value={campaign._id}>
-                {campaign.name}
-              </option>
-            ))}
-          </select>
-          {loadingCampaigns && <span className="loading-text">Loading campaigns...</span>}
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="campaign">Campaign (optional):</label>
+            <select
+              id="campaign"
+              value={selectedCampaign}
+              onChange={(e) => setSelectedCampaign(e.target.value)}
+              className="campaign-select"
+              disabled={loadingCampaigns}
+            >
+              <option value="none">-- No Campaign --</option>
+              {campaigns.map(campaign => (
+                <option key={campaign._id} value={campaign._id}>
+                  {campaign.name}
+                </option>
+              ))}
+            </select>
+            {loadingCampaigns && <span className="loading-text">Loading campaigns...</span>}
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="assignedUser">Assignee (optional):</label>
+            <select
+              id="assignedUser"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              className="user-select"
+              disabled={loadingUsers}
+            >
+              <option value="none">-- No User Assigned --</option>
+              {users.map(user => (
+                <option key={user._id} value={user._id}>
+                  {user.firstName} {user.lastName} ({user.email})
+                </option>
+              ))}
+            </select>
+            {loadingUsers && <span className="loading-text">Loading users...</span>}
+          </div>
         </div>
         
         <div className="form-group">
-          <label htmlFor="scheduledDate">Date:</label>
+          <label htmlFor="scheduledDate">Publish Date:</label>
           <DatePicker
             id="scheduledDate"
             selected={scheduledDate}

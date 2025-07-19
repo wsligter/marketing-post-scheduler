@@ -40,7 +40,10 @@ const upload = multer({
 // Get all posts
 router.get('/', requireAuth, async (req, res) => {
   try {
-    const posts = await Post.find().populate('campaign').sort({ scheduledDate: 1 });
+    const posts = await Post.find()
+      .populate('campaign')
+      .populate('assignedUser', 'firstName lastName email')
+      .sort({ scheduledDate: 1 });
     res.json(posts);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -50,7 +53,7 @@ router.get('/', requireAuth, async (req, res) => {
 // Create a new post
 router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { content, scheduledDate, campaign } = req.body;
+    const { content, scheduledDate, campaign, assignedUser } = req.body;
     
     const postData = {
       content,
@@ -60,6 +63,11 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
     // If a campaign was selected, add it to the post data
     if (campaign && campaign !== 'none') {
       postData.campaign = campaign;
+    }
+
+    // If a user was assigned, add it to the post data
+    if (assignedUser && assignedUser !== 'none') {
+      postData.assignedUser = assignedUser;
     }
 
     // If an image was uploaded, upload it to Cloudinary
@@ -78,8 +86,10 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
     const post = new Post(postData);
     const savedPost = await post.save();
     
-    // Populate the campaign data before sending the response
-    const populatedPost = await Post.findById(savedPost._id).populate('campaign');
+    // Populate the campaign and assignedUser data before sending the response
+    const populatedPost = await Post.findById(savedPost._id)
+      .populate('campaign')
+      .populate('assignedUser', 'firstName lastName email');
     
     res.status(201).json(populatedPost);
   } catch (err) {
@@ -139,7 +149,7 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
     
-    const { content, scheduledDate, campaign } = req.body;
+    const { content, scheduledDate, campaign, assignedUser } = req.body;
     
     // Update post data
     post.content = content;
@@ -150,6 +160,13 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
       post.campaign = null;
     } else if (campaign) {
       post.campaign = campaign;
+    }
+
+    // Update user assignment
+    if (assignedUser === 'none') {
+      post.assignedUser = null;
+    } else if (assignedUser) {
+      post.assignedUser = assignedUser;
     }
     
     // Handle image update or removal
@@ -186,8 +203,10 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
     
     const updatedPost = await post.save();
     
-    // Populate the campaign data before sending the response
-    const populatedPost = await Post.findById(updatedPost._id).populate('campaign');
+    // Populate the campaign and assignedUser data before sending the response
+    const populatedPost = await Post.findById(updatedPost._id)
+      .populate('campaign')
+      .populate('assignedUser', 'firstName lastName email');
     
     res.json(populatedPost);
   } catch (err) {

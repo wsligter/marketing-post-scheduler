@@ -80,6 +80,7 @@ exports.getUserProfile = async (req, res) => {
       lastName: req.user.lastName,
       email: req.user.email,
       role: req.user.role,
+      timezone: req.user.timezone || 'CET',
       createdAt: req.user.createdAt
     });
   } catch (error) {
@@ -101,6 +102,7 @@ exports.updateUserProfile = async (req, res) => {
     user.firstName = req.body.firstName || user.firstName;
     user.lastName = req.body.lastName || user.lastName;
     user.email = req.body.email || user.email;
+    user.timezone = req.body.timezone || user.timezone;
     
     // Only update password if provided
     if (req.body.password) {
@@ -119,10 +121,30 @@ exports.updateUserProfile = async (req, res) => {
       lastName: updatedUser.lastName,
       email: updatedUser.email,
       role: updatedUser.role,
+      timezone: updatedUser.timezone,
       updatedAt: updatedUser.updatedAt
     });
   } catch (error) {
     console.error('Update user profile error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Get users for assignment (excluding admin users)
+exports.getUsersForAssignment = async (req, res) => {
+  try {
+    const users = await User.find({
+      $and: [
+        { email: { $not: /^admin@/ } }, // Exclude emails starting with 'admin@'
+        { firstName: { $ne: 'admin' } }, // Exclude first name 'admin' (case sensitive)
+        { lastName: { $ne: 'admin' } }, // Exclude last name 'admin' (case sensitive)
+        { firstName: { $not: /^admin$/i } }, // Exclude first name 'admin' (case insensitive)
+        { lastName: { $not: /^admin$/i } } // Exclude last name 'admin' (case insensitive)
+      ]
+    }).select('firstName lastName email');
+    res.json(users);
+  } catch (error) {
+    console.error('Get users for assignment error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

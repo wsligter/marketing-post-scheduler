@@ -4,7 +4,7 @@ import './App.css';
 import './styles/UserMenu.css';
 import './styles/AdminPanel.css';
 import './styles/wakeup-notification.css';
-import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel } from './pages';
+import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage } from './pages';
 import logo from './assets/logo.svg';
 // Import package.json version
 import packageInfo from '../package.json';
@@ -23,7 +23,7 @@ function AppContent() {
         <div className="header-top">
           <div className="brand-container">
             <img src={logo} alt="KODIFY Logo" className="brand-logo" />
-            <h1> Marketing Scheduler</h1>
+            <h1>Marketing Calendar</h1>
           </div>
         </div>
         
@@ -32,10 +32,16 @@ function AppContent() {
             <nav className="main-nav">
               <ul>
                 <li>
+                  <NavLink to="/dashboard" className={({ isActive }) => isActive ? "active-link" : ""}>Dashboard</NavLink>
+                </li>
+                <li>
                   <NavLink to="/campaigns" className={({ isActive }) => isActive ? "active-link" : ""}>Campaigns</NavLink>
                 </li>
                 <li>
                   <NavLink to="/social-media" className={({ isActive }) => isActive ? "active-link" : ""}>Post Scheduler</NavLink>
+                </li>
+                <li>
+                  <NavLink to="/calendar" className={({ isActive }) => isActive ? "active-link" : ""}>Calendar View</NavLink>
                 </li>
                 <li className="user-menu">
                   <span>{user.firstName} {user.lastName}</span>
@@ -54,18 +60,26 @@ function AppContent() {
       
       <Routes>
         {/* Public routes */}
-        <Route path="/login" element={user ? <Navigate to="/campaigns" /> : <LoginPage />} />
+        <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
         
-        {/* Default route redirects to login or social posts based on authentication status */}
-        <Route path="/" element={user ? <Navigate to="/social-media" /> : <Navigate to="/login" />} />
+        {/* Default route redirects to login or dashboard based on authentication status */}
+        <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
         
         {/* Protected routes */}
+        <Route path="/dashboard" element={<ProtectedRoute />}>
+          <Route index element={<DashboardPage />} />
+        </Route>
+        
         <Route path="/campaigns" element={<ProtectedRoute />}>
           <Route index element={<CampaignsPage />} />
         </Route>
         
         <Route path="/social-media" element={<ProtectedRoute />}>
           <Route index element={<PostSchedulerPage />} />
+        </Route>
+        
+        <Route path="/calendar" element={<ProtectedRoute />}>
+          <Route index element={<CalendarViewPage />} />
         </Route>
         
         <Route path="/profile" element={<ProtectedRoute />}>

@@ -54,11 +54,18 @@ const PostsList = ({ posts, loading, error, onEditPost }) => {
               )}
               <div className="post-date-campaign">
                 <span className="post-date">{formatDate(post.scheduledDate)}</span>
-                {post.campaign && (
-                  <span className="campaign-badge">
-                    {post.campaign.name}
-                  </span>
-                )}
+                <div className="badges-container">
+                  {post.campaign && (
+                    <span className="campaign-badge">
+                      {post.campaign.name}
+                    </span>
+                  )}
+                  {post.assignedUser && (
+                    <span className="user-badge">
+                      👤 {post.assignedUser.firstName} {post.assignedUser.lastName}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>

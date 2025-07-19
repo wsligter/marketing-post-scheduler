@@ -24,6 +24,11 @@ const PostSchema = new mongoose.Schema({
     ref: 'Campaign',
     default: null
   },
+  assignedUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   createdAt: {
     type: Date,
     default: Date.now

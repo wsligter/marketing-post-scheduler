@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { timezones } from '../utils/timezones';
 import '../styles/Auth.css';
 
 const ProfilePage = () => {
@@ -9,6 +10,7 @@ const ProfilePage = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [timezone, setTimezone] = useState('Europe/Amsterdam');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,6 +23,8 @@ const ProfilePage = () => {
       setFirstName(user.firstName || '');
       setLastName(user.lastName || '');
       setEmail(user.email || '');
+      // Use Europe/Amsterdam as the default if user timezone is empty
+      setTimezone(user.timezone || 'Europe/Amsterdam');
     }
   }, [user]);
   
@@ -68,7 +72,8 @@ const ProfilePage = () => {
       const updateData = {
         firstName,
         lastName,
-        email
+        email,
+        timezone
       };
       
       // Add password data if the user is changing their password
@@ -136,6 +141,25 @@ const ProfilePage = () => {
               disabled={isSubmitting}
               required
             />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="timezone">Timezone*</label>
+            <select
+              id="timezone"
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+              disabled={isSubmitting}
+              required
+              className="form-select"
+            >
+              {timezones.map((tz) => (
+                <option key={tz.value} value={tz.value}>
+                  {tz.label}
+                </option>
+              ))}
+            </select>
+            <p className="form-help">Select your local timezone for accurate scheduling</p>
           </div>
           
           <h3>Change Password</h3>

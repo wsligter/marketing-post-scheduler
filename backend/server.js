@@ -12,7 +12,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3002; // Using port 3002 as default
+const PORT = process.env.PORT || 3003; // Using port 3003 as default
 
 // Get frontend URL from environment variable or use default values
 let frontendUrl = process.env.FRONTEND_URL || 'http://localhost:8081';
@@ -40,12 +40,14 @@ app.use(cors({
     frontendUrl,
     'http://localhost:3000',  // React dev server default
     'http://localhost:3001',  // Alternative port
-    'http://localhost:3002',  // Backend port
+    'http://localhost:3002',  // Old backend port
+    'http://localhost:3003',  // New backend port
     'http://localhost:8080',  // Common frontend port
     'http://localhost:8081',  // Current frontend port
     'http://127.0.0.1:3000',
     'http://127.0.0.1:3001',
     'http://127.0.0.1:3002',
+    'http://127.0.0.1:3003',
     'http://127.0.0.1:8080',
     'http://127.0.0.1:8081',
     // Render deployment URLs

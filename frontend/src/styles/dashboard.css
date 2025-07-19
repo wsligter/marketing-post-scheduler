@@ -1,0 +1,353 @@
+/* Dashboard Styles */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.dashboard-header {
+  margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  color: var(--kodify-blue);
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+}
+
+.dashboard-header p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Notification Bar */
+.notification-bar {
+  background: linear-gradient(135deg, var(--kodify-orange), #ffb347);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(255, 176, 53, 0.2);
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-icon {
+  font-size: 20px;
+}
+
+.notification-text {
+  color: var(--kodify-black);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.notification-text strong {
+  font-weight: 600;
+}
+
+/* Green notification for no posts */
+.notification-bar.no-posts-notification {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.no-posts-notification .notification-text {
+  color: white;
+}
+
+/* Red notification for API errors */
+.notification-bar.error-notification {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+}
+
+.error-notification .notification-text {
+  color: white;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* Calendar Section */
+.calendar-section {
+  background-color: var(--kodify-white);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.calendar-section h2 {
+  color: var(--kodify-blue);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
+.week-section {
+  margin-bottom: 30px;
+}
+
+.week-section:last-child {
+  margin-bottom: 0;
+}
+
+.week-section h3 {
+  color: var(--kodify-black);
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 15px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--kodify-orange);
+}
+
+.week-list {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.day-item {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px 8px;
+  min-height: 80px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.day-item:hover {
+  background-color: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.day-item.today {
+  background-color: var(--kodify-orange);
+  border-color: var(--kodify-orange);
+  color: var(--kodify-black);
+}
+
+.day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.day-name {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.day-date {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.day-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-post {
+  background-color: var(--kodify-white);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 10px;
+  line-height: 1.2;
+  border-left: 3px solid var(--kodify-blue);
+}
+
+.day-item.today .day-post {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.post-time {
+  font-weight: 600;
+  color: var(--kodify-blue);
+  display: block;
+  margin-bottom: 2px;
+}
+
+.post-preview {
+  color: #666;
+  display: block;
+}
+
+.no-posts {
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 8px 0;
+}
+
+/* My Posts Section */
+.my-posts-section {
+  background-color: var(--kodify-white);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  height: fit-content;
+}
+
+.my-posts-section h2 {
+  color: var(--kodify-blue);
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 20px 0;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.post-item {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+  border-left: 4px solid var(--kodify-orange);
+  transition: all 0.2s ease;
+}
+
+.post-item:hover {
+  background-color: #e9ecef;
+  transform: translateX(2px);
+}
+
+.post-content-preview {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--kodify-black);
+  margin-bottom: 8px;
+}
+
+.post-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.post-date {
+  color: #666;
+  font-weight: 500;
+}
+
+.post-time {
+  color: var(--kodify-blue);
+  font-weight: 600;
+}
+
+.campaign-badge {
+  background-color: var(--kodify-orange);
+  color: var(--kodify-black);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.more-posts {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  font-size: 14px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.no-posts-message {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+}
+
+.no-posts-message p {
+  margin: 0 0 8px 0;
+  line-height: 1.5;
+}
+
+.no-posts-message p:last-child {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: var(--kodify-blue);
+}
+
+/* Loading and Error States */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-content {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .week-list {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .day-item {
+    min-height: 60px;
+    padding: 8px 6px;
+  }
+  
+  .day-date {
+    font-size: 16px;
+  }
+  
+  .day-post {
+    font-size: 9px;
+    padding: 3px 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 15px;
+  }
+  
+  .week-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .notification-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

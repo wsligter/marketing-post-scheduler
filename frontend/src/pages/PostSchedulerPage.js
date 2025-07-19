@@ -7,16 +7,20 @@ const PostSchedulerPage = () => {
   const [posts, setPosts] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
   const [campaigns, setCampaigns] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('all');
+  const [selectedAssignee, setSelectedAssignee] = useState('all');
   const [loading, setLoading] = useState(true);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+  const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
 
-  // Fetch posts and campaigns when component mounts
+  // Fetch posts, campaigns, and users when component mounts
   useEffect(() => {
     fetchPosts();
     fetchCampaigns();
+    fetchUsers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -44,9 +48,9 @@ const PostSchedulerPage = () => {
       
       setAllPosts(sortedPosts);
       
-      // Filter posts based on selected campaign
-      console.log('Filtering posts by campaign:', selectedCampaign);
-      filterPosts(sortedPosts, selectedCampaign);
+      // Filter posts based on selected filters
+      console.log('Filtering posts by campaign:', selectedCampaign, 'and assignee:', selectedAssignee);
+      filterPosts(sortedPosts, selectedCampaign, selectedAssignee);
       setLoading(false);
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -63,14 +67,10 @@ const PostSchedulerPage = () => {
   const fetchCampaigns = async () => {
     try {
       setLoadingCampaigns(true);
-      console.log('Fetching campaigns for post scheduler...');
-      console.log('Auth token:', localStorage.getItem('token'));
+      console.log('Fetching campaigns...');
       
       const response = await api.get('/api/campaigns');
-      
-      console.log('Campaigns API response in post scheduler:', response);
-      console.log('Response data type:', typeof response.data);
-      console.log('Is array?', Array.isArray(response.data));
+      console.log('Campaigns API response:', response);
       
       // Ensure we have an array of campaigns
       const campaignsArray = Array.isArray(response.data) ? response.data : [];
@@ -79,7 +79,7 @@ const PostSchedulerPage = () => {
       setCampaigns(campaignsArray);
       setLoadingCampaigns(false);
     } catch (err) {
-      console.error('Error fetching campaigns for post scheduler:', err);
+      console.error('Error fetching campaigns:', err);
       console.error('Error details:', err.response ? err.response.data : 'No response data');
       console.error('Error status:', err.response ? err.response.status : 'No status');
       
@@ -88,21 +88,60 @@ const PostSchedulerPage = () => {
     }
   };
   
-  const filterPosts = (postsToFilter, campaignId) => {
-    if (campaignId === 'all') {
-      setPosts(postsToFilter);
-    } else {
-      const filtered = postsToFilter.filter(post => 
+  const fetchUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      console.log('Fetching users for filter...');
+      
+      const response = await api.get('/api/users/for-assignment');
+      console.log('Users API response:', response);
+      
+      // Ensure we have an array of users
+      const usersArray = Array.isArray(response.data) ? response.data : [];
+      console.log('Users array length:', usersArray.length);
+      
+      setUsers(usersArray);
+      setLoadingUsers(false);
+    } catch (err) {
+      console.error('Error fetching users for filter:', err);
+      console.error('Error details:', err.response ? err.response.data : 'No response data');
+      console.error('Error status:', err.response ? err.response.status : 'No status');
+      
+      setUsers([]);
+      setLoadingUsers(false);
+    }
+  };
+  
+  const filterPosts = (postsToFilter, campaignId, assigneeId) => {
+    let filtered = postsToFilter;
+    
+    // Filter by campaign
+    if (campaignId !== 'all') {
+      filtered = filtered.filter(post => 
         post.campaign && post.campaign._id === campaignId
       );
-      setPosts(filtered);
     }
+    
+    // Filter by assignee
+    if (assigneeId !== 'all') {
+      filtered = filtered.filter(post => 
+        post.assignedUser && post.assignedUser._id === assigneeId
+      );
+    }
+    
+    setPosts(filtered);
   };
   
   const handleCampaignFilterChange = (e) => {
     const campaignId = e.target.value;
     setSelectedCampaign(campaignId);
-    filterPosts(allPosts, campaignId);
+    filterPosts(allPosts, campaignId, selectedAssignee);
+  };
+  
+  const handleAssigneeFilterChange = (e) => {
+    const assigneeId = e.target.value;
+    setSelectedAssignee(assigneeId);
+    filterPosts(allPosts, selectedCampaign, assigneeId);
   };
 
   const handlePostCreated = (newPost) => {
@@ -113,7 +152,7 @@ const PostSchedulerPage = () => {
     setAllPosts(updatedAllPosts);
     
     // Apply the current filter
-    filterPosts(updatedAllPosts, selectedCampaign);
+    filterPosts(updatedAllPosts, selectedCampaign, selectedAssignee);
   };
   
   const handlePostUpdated = (updatedPost) => {
@@ -126,7 +165,7 @@ const PostSchedulerPage = () => {
     setAllPosts(updatedAllPosts);
     
     // Apply the current filter
-    filterPosts(updatedAllPosts, selectedCampaign);
+    filterPosts(updatedAllPosts, selectedCampaign, selectedAssignee);
   };
   
   const handleEditPost = (post) => {
@@ -146,7 +185,7 @@ const PostSchedulerPage = () => {
     setAllPosts(updatedAllPosts);
     
     // Apply the current filter
-    filterPosts(updatedAllPosts, selectedCampaign);
+    filterPosts(updatedAllPosts, selectedCampaign, selectedAssignee);
   };
 
   return (
@@ -164,7 +203,7 @@ const PostSchedulerPage = () => {
         
         <div className="posts-section">
           <div className="filter-container">
-            <label htmlFor="campaign-filter">Filter by Campaign:</label>
+            <label>Filter:</label>
             <select
               id="campaign-filter"
               value={selectedCampaign}
@@ -172,10 +211,24 @@ const PostSchedulerPage = () => {
               className="campaign-filter-select"
               disabled={loadingCampaigns}
             >
-              <option value="all">All Campaigns</option>
+              <option value="all">Campaign</option>
               {campaigns.map(campaign => (
                 <option key={campaign._id} value={campaign._id}>
                   {campaign.name}
+                </option>
+              ))}
+            </select>
+            <select
+              id="assignee-filter"
+              value={selectedAssignee}
+              onChange={handleAssigneeFilterChange}
+              className="assignee-filter-select"
+              disabled={loadingUsers}
+            >
+              <option value="all">Assignee</option>
+              {users.map(user => (
+                <option key={user._id} value={user._id}>
+                  {user.firstName} {user.lastName}
                 </option>
               ))}
             </select>

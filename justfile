@@ -118,6 +118,16 @@ logs-follow-service service:
 build backend-port="3002" frontend-port="8081": stop check-ports check-docker
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose build
 
+# Build only the frontend container
+# Optional parameters: backend-port, frontend-port
+build-frontend backend-port="3002" frontend-port="8081": check-docker
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose build frontend
+
+# Build only the backend container
+# Optional parameters: backend-port, frontend-port
+build-backend backend-port="3002" frontend-port="8081": check-docker
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose build backend
+
 # Build and start all containers (stopping any existing ones first) and open browser
 # Optional parameters: backend-port, frontend-port
 build-start backend-port="3002" frontend-port="8081": stop check-ports check-docker
@@ -137,6 +147,21 @@ build-start-detached backend-port="3002" frontend-port="8081": stop check-ports 
     sleep 45
     # Open browser
     open http://localhost:{{frontend-port}}
+
+# Build and start only the frontend container and open browser
+# Optional parameters: backend-port, frontend-port
+build-start-frontend backend-port="3002" frontend-port="8081": check-ports check-docker
+    #!/usr/bin/env bash
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up --build frontend &
+    # Wait for frontend to start (increased delay to ensure app is fully built)
+    sleep 45
+    # Open browser
+    open http://localhost:{{frontend-port}}
+
+# Build and start only the backend container
+# Optional parameters: backend-port, frontend-port
+build-start-backend backend-port="3002" frontend-port="8081": check-ports check-docker
+    BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose up --build backend
 
 # Show container status
 status:

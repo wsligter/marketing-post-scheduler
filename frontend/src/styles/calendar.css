@@ -1,0 +1,228 @@
+/* Calendar View Styles */
+.calendar-view-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.calendar-view-container h2 {
+  margin-top: 0;
+  color: var(--kodify-blue);
+  border-bottom: 2px solid var(--kodify-blue);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.calendar-wrapper {
+  padding: 10px;
+}
+
+/* Customize react-datepicker */
+.marketing-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.react-datepicker {
+  width: 100% !important;
+  max-width: 100% !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.react-datepicker__month-container {
+  width: 100% !important;
+  float: none !important;
+}
+
+.react-datepicker__month {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+
+.react-datepicker__week {
+  display: contents !important;
+}
+
+.react-datepicker__day-names {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+  text-align: center !important;
+  margin-bottom: 0.5em !important;
+}
+
+.react-datepicker__day-name {
+  margin: 0 !important;
+  padding: 0.5em 0 !important;
+  font-weight: bold !important;
+  color: var(--kodify-blue) !important;
+}
+
+.react-datepicker__day {
+  height: 120px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 5px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  border: 1px solid #f0f0f0 !important;
+  width: auto !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.react-datepicker__day--weekend {
+  color: #d10000 !important;
+}
+
+/* Grey out weekend days */
+.weekend-day {
+  background-color: #f5f5f5 !important;
+  color: #888 !important;
+}
+
+.react-datepicker__day--today {
+  background-color: rgba(255, 176, 53, 0.1) !important;
+  font-weight: bold !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: rgba(12, 67, 153, 0.1) !important;
+  color: var(--kodify-black) !important;
+}
+
+/* Calendar post indicators */
+.calendar-posts-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 5px;
+  overflow-y: auto;
+  max-height: 80px;
+}
+
+.calendar-post-item {
+  background-color: var(--kodify-orange);
+  border-radius: 4px;
+  padding: 3px 5px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--kodify-black);
+  margin-bottom: 3px;
+  transition: background-color 0.2s;
+}
+
+.calendar-post-item:hover {
+  background-color: var(--kodify-orange-hover);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Campaign post styling */
+.calendar-post-item.campaign-post {
+  background-color: var(--kodify-blue);
+  color: white;
+}
+
+.calendar-post-item.campaign-post:hover {
+  background-color: var(--kodify-blue-hover);
+}
+
+/* Calendar day contents */
+.calendar-day-contents {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.day-number {
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: right;
+  padding-right: 3px;
+  color: var(--kodify-black);
+}
+
+/* Date with posts styling */
+.has-posts {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.has-campaign-posts {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Post modal styling */
+.post-modal-content {
+  padding: 15px;
+}
+
+.post-image-container {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.post-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.post-details {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.post-date, .post-campaign, .post-status {
+  font-size: 14px;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.status-badge.scheduled {
+  background-color: var(--kodify-orange);
+  color: var(--kodify-black);
+}
+
+.status-badge.published {
+  background-color: var(--kodify-blue);
+  color: var(--kodify-white);
+}
+
+.status-badge.failed {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .marketing-calendar .react-calendar__tile {
+    height: 80px !important;
+  }
+  
+  .calendar-posts-indicator {
+    max-height: 50px;
+  }
+}

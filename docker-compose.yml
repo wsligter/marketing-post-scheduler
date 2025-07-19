@@ -35,6 +35,9 @@ services:
     environment:
       - NODE_ENV=development
       - REACT_APP_API_URL=http://localhost:${BACKEND_PORT:-3002}
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - WDS_SOCKET_PORT=${FRONTEND_PORT:-8081}
     depends_on:
       - backend
     networks:

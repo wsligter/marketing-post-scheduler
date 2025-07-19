@@ -25,6 +25,10 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'editor', 'reviewer', 'view-only'],
     default: 'view-only'
   },
+  timezone: {
+    type: String,
+    default: 'Europe/Amsterdam'
+  },
   hashedPassword: {
     type: String,
     required: true

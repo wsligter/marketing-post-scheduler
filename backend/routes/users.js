@@ -10,6 +10,7 @@ router.post('/login', userController.loginUser);
 // Protected routes - require authentication
 router.get('/profile', requireAuth, userController.getUserProfile);
 router.put('/profile', requireAuth, userController.updateUserProfile);
+router.get('/for-assignment', requireAuth, userController.getUsersForAssignment);
 
 // Admin only routes
 router.get('/', requireAuth, requireAdmin, userController.getUsers);

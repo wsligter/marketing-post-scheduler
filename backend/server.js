@@ -100,9 +100,9 @@ const Campaign = require('./models/Campaign');
 const Post = require('./models/Post');
 const User = require('./models/User');
 
-// Routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to the Marketing Tool API' });
+// API status route (moved from root to avoid blocking frontend)
+app.get('/api/status', (req, res) => {
+  res.json({ message: 'Welcome to the Marketing Tool API', status: 'running' });
 });
 
 // Import routes

@@ -152,13 +152,70 @@ export const AuthProvider = ({ children }) => {
       
       return true;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to login');
+      console.error('Login error occurred:', err);
+      console.error('Error details:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        headers: err.response?.headers,
+        config: {
+          url: err.config?.url,
+          method: err.config?.method,
+          data: err.config?.data
+        }
+      });
+      
+      // Provide clearer, user-friendly error messages
+      let userFriendlyMessage = 'Login failed. Please try again.';
+      
+      if (err.response) {
+        // Server responded with error status
+        const status = err.response.status;
+        const serverMessage = err.response.data?.message;
+        
+        console.log('Server error response:', { status, serverMessage });
+        
+        switch (status) {
+          case 400:
+            userFriendlyMessage = serverMessage || 'Please check your email and password.';
+            break;
+          case 401:
+            userFriendlyMessage = 'Invalid email or password. Please check your credentials and try again.';
+            break;
+          case 403:
+            userFriendlyMessage = 'Access denied. Please contact your administrator.';
+            break;
+          case 500:
+            userFriendlyMessage = 'Server error. Please try again in a few moments.';
+            break;
+          case 503:
+            userFriendlyMessage = 'Service temporarily unavailable. Please try again in a moment.';
+            break;
+          case 504:
+            userFriendlyMessage = 'Connection timeout. Please check your internet connection and try again.';
+            break;
+          default:
+            userFriendlyMessage = serverMessage || `Login failed (Error ${status}). Please try again.`;
+        }
+      } else if (err.request) {
+        // Network error - no response received
+        console.error('Network error - no response received:', err.request);
+        userFriendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+      } else {
+        // Something else happened
+        console.error('Unexpected error during login setup:', err.message);
+        userFriendlyMessage = 'An unexpected error occurred. Please try again.';
+      }
+      
+      console.log('Setting user-friendly error message:', userFriendlyMessage);
+      setError(userFriendlyMessage);
       return false;
     } finally {
       setLoading(false);
     }
   };
-  
+
   const updateProfile = async (userData) => {
     setLoading(true);
     setError(null);
@@ -170,7 +227,63 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data);
       return true;
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update profile');
+      console.error('Profile update error occurred:', err);
+      console.error('Profile update error details:', {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        headers: err.response?.headers,
+        config: {
+          url: err.config?.url,
+          method: err.config?.method
+        }
+      });
+      
+      // Provide clearer, user-friendly error messages
+      let userFriendlyMessage = 'Failed to update profile. Please try again.';
+      
+      if (err.response) {
+        const status = err.response.status;
+        const serverMessage = err.response.data?.message;
+        
+        console.log('Profile update server error response:', { status, serverMessage });
+        
+        switch (status) {
+          case 400:
+            userFriendlyMessage = serverMessage || 'Please check your profile information and try again.';
+            break;
+          case 401:
+            userFriendlyMessage = 'Your session has expired. Please log in again.';
+            break;
+          case 403:
+            userFriendlyMessage = 'You do not have permission to update this profile.';
+            break;
+          case 409:
+            userFriendlyMessage = 'This email is already in use. Please choose a different email.';
+            break;
+          case 422:
+            userFriendlyMessage = 'Please check that all fields are filled out correctly.';
+            break;
+          case 500:
+            userFriendlyMessage = 'Server error while updating profile. Please try again in a few moments.';
+            break;
+          case 503:
+            userFriendlyMessage = 'Service temporarily unavailable. Please try again in a moment.';
+            break;
+          default:
+            userFriendlyMessage = serverMessage || `Profile update failed (Error ${status}). Please try again.`;
+        }
+      } else if (err.request) {
+        console.error('Profile update network error - no response received:', err.request);
+        userFriendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+      } else {
+        console.error('Unexpected profile update error:', err.message);
+        userFriendlyMessage = 'An unexpected error occurred while updating your profile. Please try again.';
+      }
+      
+      console.log('Setting profile update error message:', userFriendlyMessage);
+      setError(userFriendlyMessage);
       return false;
     } finally {
       setLoading(false);
@@ -197,10 +310,57 @@ export const AuthProvider = ({ children }) => {
       
       return true;
     } catch (error) {
-      setError(
-        error.response?.data?.message || 
-        'Registration failed. Please try again.'
-      );
+      console.error('Registration error occurred:', error);
+      console.error('Registration error details:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        headers: error.response?.headers,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method
+        }
+      });
+      
+      // Provide clearer, user-friendly error messages
+      let userFriendlyMessage = 'Registration failed. Please try again.';
+      
+      if (error.response) {
+        const status = error.response.status;
+        const serverMessage = error.response.data?.message;
+        
+        console.log('Registration server error response:', { status, serverMessage });
+        
+        switch (status) {
+          case 400:
+            userFriendlyMessage = serverMessage || 'Please check your registration information and try again.';
+            break;
+          case 409:
+            userFriendlyMessage = 'An account with this email already exists. Please use a different email or try logging in.';
+            break;
+          case 422:
+            userFriendlyMessage = 'Please check that all required fields are filled out correctly.';
+            break;
+          case 500:
+            userFriendlyMessage = 'Server error during registration. Please try again in a few moments.';
+            break;
+          case 503:
+            userFriendlyMessage = 'Service temporarily unavailable. Please try again in a moment.';
+            break;
+          default:
+            userFriendlyMessage = serverMessage || `Registration failed (Error ${status}). Please try again.`;
+        }
+      } else if (error.request) {
+        console.error('Registration network error - no response received:', error.request);
+        userFriendlyMessage = 'Unable to connect to the server. Please check your internet connection and try again.';
+      } else {
+        console.error('Unexpected registration error:', error.message);
+        userFriendlyMessage = 'An unexpected error occurred during registration. Please try again.';
+      }
+      
+      console.log('Setting registration error message:', userFriendlyMessage);
+      setError(userFriendlyMessage);
       return false;
     } finally {
       setLoading(false);

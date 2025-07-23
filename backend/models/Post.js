@@ -29,6 +29,21 @@ const PostSchema = new mongoose.Schema({
     ref: 'User',
     default: null
   },
+  reviewer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  reviewStatus: {
+    type: String,
+    enum: ['pending', 'reviewed'],
+    default: 'pending'
+  },
+  publishStatus: {
+    type: String,
+    enum: ['scheduled', 'published'],
+    default: 'scheduled'
+  },
   createdAt: {
     type: Date,
     default: Date.now

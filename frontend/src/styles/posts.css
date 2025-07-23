@@ -201,6 +201,44 @@ input[type="file"]::-moz-file-upload-button {
   width: 100%;
 }
 
+/* Override calendar styles for PostForm datepicker */
+.post-form .react-datepicker__day {
+  height: auto !important;
+  min-height: 32px !important;
+  display: inline-block !important;
+  flex-direction: unset !important;
+  padding: 6px !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  border: none !important;
+  border-radius: 4px !important;
+  margin: 1px !important;
+  width: 32px !important;
+}
+
+.post-form .react-datepicker__month {
+  display: block !important;
+  grid-template-columns: unset !important;
+}
+
+.post-form .react-datepicker__week {
+  display: flex !important;
+  justify-content: space-around !important;
+}
+
+.post-form .react-datepicker__day-names {
+  display: flex !important;
+  grid-template-columns: unset !important;
+  justify-content: space-around !important;
+  margin-bottom: 8px !important;
+}
+
+.post-form .react-datepicker__day-name {
+  width: 32px !important;
+  padding: 8px 0 !important;
+  text-align: center !important;
+}
+
 .image-preview {
   margin-top: 10px;
   display: flex;

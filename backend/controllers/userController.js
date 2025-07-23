@@ -42,19 +42,61 @@ exports.registerUser = async (req, res) => {
 // Login user
 exports.loginUser = async (req, res) => {
   try {
+    console.log('Login attempt started for:', req.body.email);
+    
+    // Validate request body
     const { email, password } = req.body;
+    if (!email || !password) {
+      console.log('Missing email or password in request');
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
 
-    // Find user by email
-    const user = await User.findOne({ email });
+    // Check database connection
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      console.error('Database not connected. Connection state:', mongoose.connection.readyState);
+      return res.status(503).json({ message: 'Database connection unavailable. Please try again in a moment.' });
+    }
+
+    console.log('Searching for user with email:', email);
+    
+    // Find user by email with timeout
+    const user = await Promise.race([
+      User.findOne({ email }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Database query timeout')), 10000)
+      )
+    ]);
+    
     if (!user) {
+      console.log('User not found for email:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    console.log('User found, checking password for:', email);
+    
     // Check if password is correct
     if (!user.authenticate(password)) {
+      console.log('Invalid password for user:', email);
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    console.log('Password valid, generating token for:', email);
+    
+    // Generate token with error handling
+    let token;
+    try {
+      token = generateToken(user);
+      if (!token) {
+        throw new Error('Token generation failed');
+      }
+    } catch (tokenError) {
+      console.error('Token generation error:', tokenError);
+      return res.status(500).json({ message: 'Authentication token generation failed' });
+    }
+
+    console.log('Login successful for:', email);
+    
     // Return user data with token
     res.json({
       _id: user._id,
@@ -62,11 +104,26 @@ exports.loginUser = async (req, res) => {
       lastName: user.lastName,
       email: user.email,
       role: user.role,
-      token: generateToken(user)
+      token: token
     });
   } catch (error) {
     console.error('Login user error:', error);
-    res.status(500).json({ message: 'Server error during login', error: error.message });
+    console.error('Error stack:', error.stack);
+    
+    // Handle specific error types
+    if (error.message === 'Database query timeout') {
+      return res.status(504).json({ message: 'Database query timeout. Please try again.' });
+    }
+    
+    if (error.name === 'MongoNetworkError' || error.name === 'MongoServerSelectionError') {
+      return res.status(503).json({ message: 'Database connection error. Please try again in a moment.' });
+    }
+    
+    // Generic server error
+    res.status(500).json({ 
+      message: 'Server error during login', 
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
   }
 };
 

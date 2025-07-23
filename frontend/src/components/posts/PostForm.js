@@ -17,6 +17,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
   const [selectedUser, setSelectedUser] = useState('none');
+  const [selectedReviewer, setSelectedReviewer] = useState('none');
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [scheduledPosts, setScheduledPosts] = useState([]);
@@ -50,6 +51,13 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         setSelectedUser(editingPost.assignedUser._id);
       } else {
         setSelectedUser('none');
+      }
+      
+      // Set reviewer if post has one
+      if (editingPost.reviewer) {
+        setSelectedReviewer(editingPost.reviewer._id);
+      } else {
+        setSelectedReviewer('none');
       }
       
       // Set image preview if post has an image
@@ -166,10 +174,11 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     setScheduledDate(new Date());
     setImage(null);
     setImagePreview(null);
-    setError(null);
     setIsEditing(false);
     setSelectedCampaign('none');
     setSelectedUser('none');
+    setSelectedReviewer('none');
+    setError(null);
     setRemoveImage(false);
     
     // Reset the file input element by clearing its value
@@ -282,7 +291,6 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
       let dateToSubmit = new Date(scheduledDate);
       dateToSubmit.setHours(0, 0, 0, 0);
       console.log('Scheduled date:', dateToSubmit.toISOString());
-      
       formData.append('scheduledDate', dateToSubmit.toISOString());
       
       // Add campaign if selected
@@ -299,6 +307,14 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         formData.append('assignedUser', selectedUser);
       } else {
         console.log('No user assigned');
+      }
+      
+      // Add reviewer if selected
+      if (selectedReviewer && selectedReviewer !== 'none') {
+        console.log('Selected reviewer:', selectedReviewer);
+        formData.append('reviewer', selectedReviewer);
+      } else {
+        console.log('No reviewer assigned');
       }
       
       if (image) {
@@ -464,6 +480,25 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
               disabled={loadingUsers}
             >
               <option value="none">-- No User Assigned --</option>
+              {users.map(user => (
+                <option key={user._id} value={user._id}>
+                  {user.firstName} {user.lastName} ({user.email})
+                </option>
+              ))}
+            </select>
+            {loadingUsers && <span className="loading-text">Loading users...</span>}
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="reviewer">Reviewer (optional):</label>
+            <select
+              id="reviewer"
+              value={selectedReviewer}
+              onChange={(e) => setSelectedReviewer(e.target.value)}
+              className="user-select"
+              disabled={loadingUsers}
+            >
+              <option value="none">-- No Reviewer --</option>
               {users.map(user => (
                 <option key={user._id} value={user._id}>
                   {user.firstName} {user.lastName} ({user.email})

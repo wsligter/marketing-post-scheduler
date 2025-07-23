@@ -69,31 +69,71 @@ app.use(express.json());
 
 // Connect to MongoDB Atlas
 let dbClient;
-connectToDatabase()
-  .then(client => {
-    dbClient = client;
-    console.log('MongoDB Atlas connected');
-    
-    // Get MongoDB connection string from environment variables
-    const username = process.env.MONGO_USERNAME;
-    const password = process.env.MONGO_PASSWORD;
-    const cluster = process.env.MONGO_CLUSTER;
-    const appName = process.env.MONGO_APP_NAME;
-    
-    // Construct the MongoDB URI for Mongoose with additional connection options
-    const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}&connectTimeoutMS=30000&socketTimeoutMS=30000&maxIdleTimeMS=120000&serverSelectionTimeoutMS=30000`;
-    
-    // Connect Mongoose to the same MongoDB Atlas instance
-    return mongoose.connect(uri);
-  })
-  .then(() => {
-    console.log('Mongoose connected to MongoDB Atlas');
-    
-    // Create initial admin user if no users exist
-    const { createInitialAdmin } = require('./controllers/userController');
-    createInitialAdmin();
-  })
-  .catch(err => console.error('MongoDB Atlas connection error:', err));
+let isDbConnected = false;
+
+// Database connection with retry logic
+async function initializeDatabase() {
+  const maxRetries = 3;
+  let retryCount = 0;
+  
+  while (retryCount < maxRetries) {
+    try {
+      console.log(`Database connection attempt ${retryCount + 1}/${maxRetries}`);
+      
+      // Check if required environment variables are present
+      const requiredEnvVars = ['MONGO_USERNAME', 'MONGO_PASSWORD', 'MONGO_CLUSTER', 'MONGO_APP_NAME'];
+      const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+      
+      if (missingVars.length > 0) {
+        throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+      }
+      
+      // Connect to MongoDB Atlas
+      dbClient = await connectToDatabase();
+      console.log('MongoDB Atlas connected');
+      
+      // Get MongoDB connection string from environment variables
+      const username = process.env.MONGO_USERNAME;
+      const password = process.env.MONGO_PASSWORD;
+      const cluster = process.env.MONGO_CLUSTER;
+      const appName = process.env.MONGO_APP_NAME;
+      
+      // Construct the MongoDB URI for Mongoose with additional connection options
+      const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}&connectTimeoutMS=30000&socketTimeoutMS=30000&maxIdleTimeMS=120000&serverSelectionTimeoutMS=30000`;
+      
+      // Connect Mongoose to the same MongoDB Atlas instance
+      await mongoose.connect(uri);
+      console.log('Mongoose connected to MongoDB Atlas');
+      
+      isDbConnected = true;
+      
+      // Create initial admin user if no users exist
+      const { createInitialAdmin } = require('./controllers/userController');
+      await createInitialAdmin();
+      
+      console.log('Database initialization completed successfully');
+      break;
+      
+    } catch (err) {
+      retryCount++;
+      console.error(`Database connection attempt ${retryCount} failed:`, err.message);
+      
+      if (retryCount >= maxRetries) {
+        console.error('All database connection attempts failed. Server will start but database operations may fail.');
+        console.error('Full error:', err);
+        break;
+      }
+      
+      // Wait before retrying (exponential backoff)
+      const waitTime = Math.pow(2, retryCount) * 1000;
+      console.log(`Waiting ${waitTime}ms before retry...`);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+}
+
+// Initialize database connection
+initializeDatabase();
 
 // Import models
 const Campaign = require('./models/Campaign');

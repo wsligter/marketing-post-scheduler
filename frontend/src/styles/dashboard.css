@@ -1,4 +1,191 @@
 /* Dashboard Styles */
+
+/* Review Posts Section */
+.review-posts-section {
+  margin-bottom: 30px;
+}
+
+.review-posts-section h2 {
+  color: var(--kodify-blue);
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  border-left: 4px solid var(--kodify-orange);
+  padding-left: 12px;
+}
+
+.review-post {
+  border-left: 4px solid var(--kodify-orange);
+  background-color: #fff8f0;
+}
+
+/* Badge Styles */
+.review-badge {
+  background-color: var(--kodify-orange);
+  color: var(--kodify-black);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.assigned-user-badge {
+  background-color: #e3f2fd;
+  color: var(--kodify-blue);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.reviewer-badge {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Due Date Tabs - Overlay Index Style */
+.post-item {
+  position: relative;
+}
+
+.due-tab {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  padding: 4px 12px 8px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-radius: 6px 6px 0 0;
+  border: 2px solid;
+  border-bottom: none;
+  z-index: 10;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.15);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%);
+}
+
+.due-tab::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  right: -2px;
+  height: 4px;
+  background-color: inherit;
+  border-left: 2px solid;
+  border-right: 2px solid;
+  border-color: inherit;
+}
+
+.due-today {
+  background-color: #ffebee;
+  color: #c62828;
+  border-color: #ef5350;
+}
+
+.due-tomorrow {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border-color: #ff9800;
+}
+
+.due-2days {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border-color: #9c27b0;
+}
+
+.due-3days {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  border-color: #4caf50;
+}
+
+/* Both Badge - when user is owner and reviewer */
+.both-badge {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #42a5f5;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Ready to Post Badge */
+.ready-badge {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #4caf50;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Post Actions */
+.post-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.review-btn {
+  background-color: var(--kodify-orange);
+  color: var(--kodify-white);
+}
+
+.review-btn:hover:not(:disabled) {
+  background-color: #e65100;
+  transform: translateY(-1px);
+}
+
+.publish-btn {
+  background-color: var(--kodify-blue);
+  color: var(--kodify-white);
+}
+
+.publish-btn:hover:not(:disabled) {
+  background-color: #1565c0;
+  transform: translateY(-1px);
+}
 .dashboard-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -219,11 +406,14 @@
 }
 
 .post-item {
-  background-color: #f8f9fa;
-  border-radius: 6px;
-  padding: 12px;
-  border-left: 4px solid var(--kodify-orange);
-  transition: all 0.2s ease;
+  background: var(--kodify-white);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px 16px 16px 16px;
+  margin: 16px 0 12px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+  position: relative;
 }
 
 .post-item:hover {
@@ -242,8 +432,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 8px;
   align-items: center;
-  font-size: 12px;
+}
+
+.post-details > * {
+  margin-bottom: 4px;
 }
 
 .post-date {

@@ -43,6 +43,7 @@ router.get('/', requireAuth, async (req, res) => {
     const posts = await Post.find()
       .populate('campaign')
       .populate('assignedUser', 'firstName lastName email')
+      .populate('reviewer', 'firstName lastName email')
       .sort({ scheduledDate: 1 });
     res.json(posts);
   } catch (err) {
@@ -53,7 +54,7 @@ router.get('/', requireAuth, async (req, res) => {
 // Create a new post
 router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   try {
-    const { content, scheduledDate, campaign, assignedUser } = req.body;
+    const { content, scheduledDate, campaign, assignedUser, reviewer } = req.body;
     
     const postData = {
       content,
@@ -68,6 +69,11 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
     // If a user was assigned, add it to the post data
     if (assignedUser && assignedUser !== 'none') {
       postData.assignedUser = assignedUser;
+    }
+
+    // If a reviewer was assigned, add it to the post data
+    if (reviewer && reviewer !== 'none') {
+      postData.reviewer = reviewer;
     }
 
     // If an image was uploaded, upload it to Cloudinary
@@ -86,10 +92,11 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
     const post = new Post(postData);
     const savedPost = await post.save();
     
-    // Populate the campaign and assignedUser data before sending the response
+    // Populate the campaign, assignedUser, and reviewer data before sending the response
     const populatedPost = await Post.findById(savedPost._id)
       .populate('campaign')
-      .populate('assignedUser', 'firstName lastName email');
+      .populate('assignedUser', 'firstName lastName email')
+      .populate('reviewer', 'firstName lastName email');
     
     res.status(201).json(populatedPost);
   } catch (err) {
@@ -168,6 +175,13 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
     } else if (assignedUser) {
       post.assignedUser = assignedUser;
     }
+
+    // Update reviewer assignment
+    if (reviewer === 'none') {
+      post.reviewer = null;
+    } else if (reviewer) {
+      post.reviewer = reviewer;
+    }
     
     // Handle image update or removal
     if (req.file) {
@@ -203,10 +217,11 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
     
     const updatedPost = await post.save();
     
-    // Populate the campaign and assignedUser data before sending the response
+    // Populate the campaign, assignedUser, and reviewer data before sending the response
     const populatedPost = await Post.findById(updatedPost._id)
       .populate('campaign')
-      .populate('assignedUser', 'firstName lastName email');
+      .populate('assignedUser', 'firstName lastName email')
+      .populate('reviewer', 'firstName lastName email');
     
     res.json(populatedPost);
   } catch (err) {
@@ -214,11 +229,79 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
   }
 });
 
+// Update review status
+router.patch('/:id/review-status', requireAuth, async (req, res) => {
+  try {
+    const { reviewStatus } = req.body;
+    const post = await Post.findById(req.params.id).populate('assignedUser reviewer');
+    
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    
+    // Check if user is the reviewer or admin
+    if (post.reviewer && post.reviewer._id.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to update review status' });
+    }
+    
+    post.reviewStatus = reviewStatus;
+    await post.save();
+    
+    const updatedPost = await Post.findById(post._id)
+      .populate('assignedUser', 'firstName lastName email')
+      .populate('reviewer', 'firstName lastName email')
+      .populate('campaign', 'name');
+    
+    res.json(updatedPost);
+  } catch (error) {
+    console.error('Update review status error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Update publish status
+router.patch('/:id/publish-status', requireAuth, async (req, res) => {
+  try {
+    const { publishStatus } = req.body;
+    const post = await Post.findById(req.params.id).populate('assignedUser reviewer');
+    
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    
+    // Check if user owns the post or is admin
+    if (post.assignedUser._id.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to update publish status' });
+    }
+    
+    post.publishStatus = publishStatus;
+    await post.save();
+    
+    const updatedPost = await Post.findById(post._id)
+      .populate('assignedUser', 'firstName lastName email')
+      .populate('reviewer', 'firstName lastName email')
+      .populate('campaign', 'name');
+    
+    res.json(updatedPost);
+  } catch (error) {
+    console.error('Update publish status error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // Delete a post
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: 'Post not found' });
+    
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    
+    // Check if user owns the post or is admin
+    if (post.assignedUser.toString() !== req.user.id && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Not authorized to delete this post' });
+    }
     
     // Delete the image from Cloudinary if it exists
     if (post.imageUrl && post.imageUrl.includes('cloudinary.com')) {

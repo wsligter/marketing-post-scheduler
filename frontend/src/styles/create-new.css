@@ -365,6 +365,58 @@
   font-size: 14px;
 }
 
+/* Datepicker Styles - Similar to PostForm */
+.create-new-page .date-picker-container {
+  position: relative;
+}
+
+/* Add spacing before the Publish Date field */
+.create-new-page .form-group:has(.date-picker) {
+  margin-top: 20px;
+}
+
+.create-new-page .react-datepicker-wrapper {
+  width: 100%;
+}
+
+/* Override calendar styles for CreateNewPage datepicker */
+.create-new-page .react-datepicker__day {
+  height: auto !important;
+  min-height: 32px !important;
+  display: inline-block !important;
+  flex-direction: unset !important;
+  padding: 6px !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
+  border: none !important;
+  border-radius: 4px !important;
+  margin: 1px !important;
+  width: 32px !important;
+}
+
+.create-new-page .react-datepicker__month {
+  display: block !important;
+  grid-template-columns: unset !important;
+}
+
+.create-new-page .react-datepicker__week {
+  display: flex !important;
+  justify-content: space-around !important;
+}
+
+.create-new-page .react-datepicker__day-names {
+  display: flex !important;
+  grid-template-columns: unset !important;
+  justify-content: space-around !important;
+  margin-bottom: 8px !important;
+}
+
+.create-new-page .react-datepicker__day-name {
+  width: 32px !important;
+  padding: 8px 0 !important;
+  text-align: center !important;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .create-new-container {

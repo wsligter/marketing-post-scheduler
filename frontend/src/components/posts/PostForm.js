@@ -452,7 +452,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="campaign">Campaign (optional):</label>
+            <label htmlFor="campaign">Campaign:</label>
             <select
               id="campaign"
               value={selectedCampaign}
@@ -471,7 +471,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
           </div>
           
           <div className="form-group">
-            <label htmlFor="assignedUser">Assignee (optional):</label>
+            <label htmlFor="assignedUser">Assignee:</label>
             <select
               id="assignedUser"
               value={selectedUser}
@@ -490,7 +490,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
           </div>
           
           <div className="form-group">
-            <label htmlFor="reviewer">Reviewer (optional):</label>
+            <label htmlFor="reviewer">Reviewer:</label>
             <select
               id="reviewer"
               value={selectedReviewer}

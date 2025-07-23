@@ -25,27 +25,39 @@
   font-size: 16px;
 }
 
-.scheduler-container {
+/* Post Scheduler specific container - not shared with other pages */
+.social-media-scheduler .scheduler-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   padding: 15px;
   border-radius: 8px;
   box-shadow: var(--shadow);
+  box-sizing: border-box;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
-  .scheduler-container {
+  .social-media-scheduler .scheduler-container {
     grid-template-columns: 1fr;
+  }
+  
+  /* Stack form rows vertically on mobile */
+  .social-media-scheduler .form-row {
+    flex-direction: column;
+    gap: 10px;
   }
 }
 
-.form-section {
-  width: 100%;
+/* Grid items should not have explicit width to avoid overlap */
+.social-media-scheduler .form-section {
+  box-sizing: border-box;
+  min-width: 0; /* Prevent overflow */
 }
 
-.posts-section {
-  width: 100%;
+.social-media-scheduler .posts-section {
+  box-sizing: border-box;
+  min-width: 0; /* Prevent overflow */
 }
 
 /* Filter Container */
@@ -119,6 +131,20 @@
   margin-bottom: 15px;
 }
 
+/* Adjust form row for grid layout - reduce gap for better fit */
+.social-media-scheduler .form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.social-media-scheduler .form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+  min-width: 0; /* Prevent overflow */
+}
+
+/* Fallback for other pages */
 .form-row {
   display: flex;
   gap: 15px;
@@ -520,14 +546,10 @@ input[type="file"]::-moz-file-upload-button {
   font-size: 13px;
 }
 
-/* Responsive styles */
+/* Additional responsive styles for form and posts sections */
 @media (max-width: 768px) {
-  .scheduler-container {
-    flex-direction: column;
-  }
-  
-  .form-section,
-  .posts-section {
+  .social-media-scheduler .form-section,
+  .social-media-scheduler .posts-section {
     max-width: 100%;
   }
 }

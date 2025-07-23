@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, NavLink, Navigate } from 'react-router-dom';
 import './App.css';
 import './styles/UserMenu.css';
@@ -16,6 +16,15 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function AppContent() {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <div className="App">
@@ -29,31 +38,71 @@ function AppContent() {
         
         {user ? (
           <div className="header-nav">
-            <nav className="main-nav">
+            <button 
+              className="mobile-menu-toggle"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle navigation menu"
+            >
+              <span className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+            
+            <nav className={`main-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
               <ul>
                 <li>
-                  <NavLink to="/dashboard" className={({ isActive }) => isActive ? "active-link" : ""}>Dashboard</NavLink>
+                  <NavLink 
+                    to="/dashboard" 
+                    className={({ isActive }) => isActive ? "active-link" : ""}
+                    onClick={closeMobileMenu}
+                  >
+                    Dashboard
+                  </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/campaigns" className={({ isActive }) => isActive ? "active-link" : ""}>Campaigns</NavLink>
+                  <NavLink 
+                    to="/campaigns" 
+                    className={({ isActive }) => isActive ? "active-link" : ""}
+                    onClick={closeMobileMenu}
+                  >
+                    Campaigns
+                  </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/social-media" className={({ isActive }) => isActive ? "active-link" : ""}>Post Scheduler</NavLink>
+                  <NavLink 
+                    to="/social-media" 
+                    className={({ isActive }) => isActive ? "active-link" : ""}
+                    onClick={closeMobileMenu}
+                  >
+                    Post Scheduler
+                  </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/calendar" className={({ isActive }) => isActive ? "active-link" : ""}>Calendar View</NavLink>
+                  <NavLink 
+                    to="/calendar" 
+                    className={({ isActive }) => isActive ? "active-link" : ""}
+                    onClick={closeMobileMenu}
+                  >
+                    Calendar View
+                  </NavLink>
                 </li>
                 <li className="user-menu">
-                  <span>{user.firstName} {user.lastName}</span>
+                  <span className="user-name">{user.firstName} {user.lastName}</span>
                   <div className="user-dropdown">
                     <div className="user-role">{user.role}</div>
-                    <Link to="/profile">My Profile</Link>
-                    {user.role === 'admin' && <Link to="/admin">Admin Panel</Link>}
-                    <button onClick={logout} className="logout-button">Logout</button>
+                    <Link to="/profile" onClick={closeMobileMenu}>My Profile</Link>
+                    {user.role === 'admin' && <Link to="/admin" onClick={closeMobileMenu}>Admin Panel</Link>}
+                    <button onClick={() => { logout(); closeMobileMenu(); }} className="logout-button">Logout</button>
                   </div>
                 </li>
               </ul>
             </nav>
+            
+            {isMobileMenuOpen && (
+              <div className="mobile-menu-overlay" onClick={closeMobileMenu}></div>
+            )}
           </div>
         ) : null}
       </header>

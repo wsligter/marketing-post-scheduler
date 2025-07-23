@@ -218,11 +218,80 @@
 
 /* Responsive styles */
 @media (max-width: 768px) {
+  .calendar-view-container {
+    padding: 10px;
+  }
+  
+  .calendar-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .marketing-calendar {
+    min-width: 320px;
+    font-size: 14px;
+  }
+  
   .marketing-calendar .react-calendar__tile {
-    height: 80px !important;
+    height: 90px !important;
+    padding: 4px;
+    font-size: 14px;
   }
   
   .calendar-posts-indicator {
-    max-height: 50px;
+    max-height: 60px;
+    overflow-y: auto;
+  }
+  
+  .calendar-post-item {
+    font-size: 11px;
+    padding: 4px 6px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: rgba(255, 176, 53, 0.2);
+    border: 1px solid var(--kodify-orange);
+    word-break: break-word;
+    line-height: 1.2;
+  }
+  
+  .calendar-post-item.campaign-post {
+    background-color: rgba(12, 67, 153, 0.2);
+    border-color: var(--kodify-blue);
+    color: var(--kodify-blue);
+  }
+  
+  .day-number {
+    font-weight: 600;
+    margin-bottom: 2px;
+    display: block;
+  }
+  
+  /* Improve touch targets */
+  .marketing-calendar .react-calendar__navigation button {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+  
+  .marketing-calendar .react-calendar__month-view__weekdays__weekday {
+    font-size: 12px;
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .marketing-calendar .react-calendar__tile {
+    height: 70px !important;
+    padding: 2px;
+  }
+  
+  .calendar-post-item {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+  
+  .calendar-posts-indicator {
+    max-height: 45px;
   }
 }

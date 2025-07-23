@@ -36,7 +36,7 @@ const PostSchema = new mongoose.Schema({
   },
   reviewStatus: {
     type: String,
-    enum: ['pending', 'reviewed'],
+    enum: ['pending', 'reviewed', 'changes_requested'],
     default: 'pending'
   },
   publishStatus: {

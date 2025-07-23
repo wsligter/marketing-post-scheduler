@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { AuthContext } from '../context/AuthContext';
+import { AuthContext } from '../contexts/AuthContext';
 import api from '../utils/api';
+import PostDetailModal from '../components/posts/PostDetailModal';
 import '../styles/dashboard.css';
 
 const DashboardPage = () => {
   const { user } = useContext(AuthContext);
   const [userPosts, setUserPosts] = useState([]);
   const [updatingStatus, setUpdatingStatus] = useState({});
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [upcomingPost, setUpcomingPost] = useState(null);
@@ -322,7 +325,14 @@ const DashboardPage = () => {
                 const isBothReviewerAndOwner = isReviewPost && isAssignedPost;
                 
                 return (
-                  <div key={post._id} className={`post-item ${isReviewPost ? 'review-post' : ''}`}>
+                  <div 
+                    key={post._id} 
+                    className={`post-item ${isReviewPost ? 'review-post' : ''} clickable-post`}
+                    onClick={() => {
+                      setSelectedPost(post);
+                      setIsModalOpen(true);
+                    }}
+                  >
                     <div className="post-content-preview">
                       {post.content.substring(0, 100)}...
                     </div>
@@ -349,6 +359,11 @@ const DashboardPage = () => {
                       {/* Ready to post badge - for assigned posts that are reviewed */}
                       {isAssignedPost && post.reviewStatus === 'reviewed' && post.publishStatus === 'scheduled' && (
                         <span className="ready-badge">Ready to Post</span>
+                      )}
+                      
+                      {/* Changes requested badge - for owners when reviewer requests changes */}
+                      {isAssignedPost && post.reviewStatus === 'changes_requested' && (
+                        <span className="changes-requested-badge">Changes Requested</span>
                       )}
                       
                       {/* Campaign badge */}
@@ -423,6 +438,17 @@ const DashboardPage = () => {
           )}
         </div>
       </div>
+      
+      {/* Post Detail Modal */}
+      <PostDetailModal
+        post={selectedPost}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedPost(null);
+        }}
+        onPostUpdate={fetchUserPosts}
+      />
     </div>
   );
 };

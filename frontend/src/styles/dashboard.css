@@ -135,6 +135,20 @@
   animation: pulse 2s infinite;
 }
 
+/* Changes Requested Badge */
+.changes-requested-badge {
+  background-color: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef5350;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
 @keyframes pulse {
   0% { opacity: 1; }
   50% { opacity: 0.7; }
@@ -412,8 +426,18 @@
   padding: 20px 16px 16px 16px;
   margin: 16px 0 12px 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s ease;
+  transition: all 0.2s ease;
   position: relative;
+}
+
+/* Clickable Post Styling */
+.clickable-post {
+  cursor: pointer;
+}
+
+.clickable-post:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 .post-item:hover {

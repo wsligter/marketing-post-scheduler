@@ -4,8 +4,8 @@ import './App.css';
 import './styles/UserMenu.css';
 import './styles/AdminPanel.css';
 import './styles/wakeup-notification.css';
-import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage } from './pages';
-import logo from './assets/logo.svg';
+import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage, CreateNewPage } from './pages';
+import logo from './assets/kodify_logo_white.svg';
 // Import package.json version
 import packageInfo from '../package.json';
 // Import auth context
@@ -59,6 +59,15 @@ function AppContent() {
                     onClick={closeMobileMenu}
                   >
                     Dashboard
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/create-new" 
+                    className={({ isActive }) => isActive ? "active-link" : ""}
+                    onClick={closeMobileMenu}
+                  >
+                    Create New
                   </NavLink>
                 </li>
                 <li>
@@ -117,6 +126,10 @@ function AppContent() {
         {/* Protected routes */}
         <Route path="/dashboard" element={<ProtectedRoute />}>
           <Route index element={<DashboardPage />} />
+        </Route>
+        
+        <Route path="/create-new" element={<ProtectedRoute />}>
+          <Route index element={<CreateNewPage />} />
         </Route>
         
         <Route path="/campaigns" element={<ProtectedRoute />}>

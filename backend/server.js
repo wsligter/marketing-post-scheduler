@@ -150,12 +150,16 @@ const postsRoutes = require('./routes/posts');
 const campaignsRoutes = require('./routes/campaigns');
 const healthRoutes = require('./routes/health');
 const usersRoutes = require('./routes/users');
+const systemPromptsRoutes = require('./routes/systemPrompts');
+const aiRoutes = require('./routes/ai');
 
 // Use routes
 app.use('/api/posts', postsRoutes);
 app.use('/api/campaigns', campaignsRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/system-prompts', systemPromptsRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

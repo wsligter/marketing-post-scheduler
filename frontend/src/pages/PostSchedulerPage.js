@@ -202,43 +202,20 @@ const PostSchedulerPage = () => {
         </div>
         
         <div className="posts-section">
-          <div className="filter-container">
-            <label>Filter:</label>
-            <select
-              id="campaign-filter"
-              value={selectedCampaign}
-              onChange={handleCampaignFilterChange}
-              className="campaign-filter-select"
-              disabled={loadingCampaigns}
-            >
-              <option value="all">Campaign</option>
-              {campaigns.map(campaign => (
-                <option key={campaign._id} value={campaign._id}>
-                  {campaign.name}
-                </option>
-              ))}
-            </select>
-            <select
-              id="assignee-filter"
-              value={selectedAssignee}
-              onChange={handleAssigneeFilterChange}
-              className="assignee-filter-select"
-              disabled={loadingUsers}
-            >
-              <option value="all">Assignee</option>
-              {users.map(user => (
-                <option key={user._id} value={user._id}>
-                  {user.firstName} {user.lastName}
-                </option>
-              ))}
-            </select>
-          </div>
-          
           <PostsList 
             posts={posts} 
             loading={loading} 
             error={error}
             onEditPost={handleEditPost}
+            // Filter props
+            campaigns={campaigns}
+            users={users}
+            selectedCampaign={selectedCampaign}
+            selectedAssignee={selectedAssignee}
+            onCampaignFilterChange={handleCampaignFilterChange}
+            onAssigneeFilterChange={handleAssigneeFilterChange}
+            loadingCampaigns={loadingCampaigns}
+            loadingUsers={loadingUsers}
           />
         </div>
       </div>

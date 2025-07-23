@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 import api from '../utils/api';
 import PostDetailModal from '../components/posts/PostDetailModal';
 import '../styles/dashboard.css';
@@ -7,7 +7,6 @@ import '../styles/dashboard.css';
 const DashboardPage = () => {
   const { user } = useContext(AuthContext);
   const [userPosts, setUserPosts] = useState([]);
-  const [updatingStatus, setUpdatingStatus] = useState({});
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -118,6 +117,9 @@ const DashboardPage = () => {
     const diffTime = postDate - now;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     
+    // Check if post is overdue (past scheduled date)
+    if (diffDays < 0) return { text: 'Overdue', class: 'due-overdue' };
+    
     if (diffDays === 0) return { text: 'Today', class: 'due-today' };
     if (diffDays === 1) return { text: 'Tomorrow', class: 'due-tomorrow' };
     if (diffDays === 2) return { text: '2 days', class: 'due-2days' };
@@ -125,33 +127,7 @@ const DashboardPage = () => {
     return null;
   };
 
-  const updateReviewStatus = async (postId, status) => {
-    try {
-      setUpdatingStatus(prev => ({ ...prev, [postId]: true }));
-      await api.patch(`/api/posts/${postId}/review-status`, { reviewStatus: status });
-      // Refresh posts after update
-      fetchUserPosts();
-    } catch (error) {
-      console.error('Error updating review status:', error);
-      setError('Failed to update review status');
-    } finally {
-      setUpdatingStatus(prev => ({ ...prev, [postId]: false }));
-    }
-  };
 
-  const updatePublishStatus = async (postId, status) => {
-    try {
-      setUpdatingStatus(prev => ({ ...prev, [postId]: true }));
-      await api.patch(`/api/posts/${postId}/publish-status`, { publishStatus: status });
-      // Refresh posts after update
-      fetchUserPosts();
-    } catch (error) {
-      console.error('Error updating publish status:', error);
-      setError('Failed to update publish status');
-    } finally {
-      setUpdatingStatus(prev => ({ ...prev, [postId]: false }));
-    }
-  };
 
   const getWeekDays = (startDate) => {
     const days = [];
@@ -247,7 +223,6 @@ const DashboardPage = () => {
       <div className="dashboard-content">
         {/* Calendar Section */}
         <div className="calendar-section">
-          <h2>Calendar View</h2>
           
           {/* This Week */}
           <div className="week-section">
@@ -315,7 +290,7 @@ const DashboardPage = () => {
 
         {/* Unified Posts Section */}
         <div className="my-posts-section">
-          <h2>My Posts & Reviews</h2>
+          <h2>My Items & Reviews</h2>
           {userPosts.length > 0 ? (
             <div className="posts-list">
               {userPosts.slice(0, 10).map(post => {
@@ -383,42 +358,6 @@ const DashboardPage = () => {
                         <span className="reviewer-badge">
                           Reviewer: {post.reviewer.firstName} {post.reviewer.lastName}
                         </span>
-                      )}
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="post-actions">
-                      {/* Review action - for reviewers */}
-                      {isReviewPost && post.reviewStatus === 'pending' && (
-                        <button 
-                          className="action-btn review-btn"
-                          onClick={() => updateReviewStatus(post._id, 'reviewed')}
-                          disabled={updatingStatus[post._id]}
-                        >
-                          {updatingStatus[post._id] ? 'Updating...' : 'Mark as Reviewed'}
-                        </button>
-                      )}
-                      
-                      {/* Publish action - for owners of reviewed posts */}
-                      {isAssignedPost && post.reviewStatus === 'reviewed' && post.publishStatus === 'scheduled' && (
-                        <button 
-                          className="action-btn publish-btn"
-                          onClick={() => updatePublishStatus(post._id, 'published')}
-                          disabled={updatingStatus[post._id]}
-                        >
-                          {updatingStatus[post._id] ? 'Publishing...' : 'Mark as Published'}
-                        </button>
-                      )}
-                      
-                      {/* Publish action - for owners without reviewer */}
-                      {isAssignedPost && !post.reviewer && post.publishStatus === 'scheduled' && (
-                        <button 
-                          className="action-btn publish-btn"
-                          onClick={() => updatePublishStatus(post._id, 'published')}
-                          disabled={updatingStatus[post._id]}
-                        >
-                          {updatingStatus[post._id] ? 'Publishing...' : 'Mark as Published'}
-                        </button>
                       )}
                     </div>
                   </div>

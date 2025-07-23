@@ -403,7 +403,7 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
 
   return (
     <div className="post-form-container">
-      <h2>{isEditing ? 'Edit' : 'Add'} Social Media Post</h2>
+      <h2>{isEditing ? 'Edit' : 'Add'} Item</h2>
       {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit} className="post-form">

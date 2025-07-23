@@ -87,25 +87,25 @@
 }
 
 .status-badge.pending {
-  background-color: #fff3e0;
+  background-color: #ffb061;
   color: #ef6c00;
   border: 1px solid #ff9800;
 }
 
 .status-badge.reviewed {
-  background-color: #e8f5e8;
+  background-color: #6eff6e;
   color: #2e7d32;
   border: 1px solid #4caf50;
 }
 
 .status-badge.changes-requested {
-  background-color: #ffebee;
+  background-color: #ff8fa0;
   color: #c62828;
   border: 1px solid #ef5350;
 }
 
 .status-badge.published {
-  background-color: #e3f2fd;
+  background-color: #b5e0ff;
   color: #1565c0;
   border: 1px solid #42a5f5;
 }

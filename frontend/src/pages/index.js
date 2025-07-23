@@ -5,6 +5,7 @@ import ProfilePage from './ProfilePage';
 import AdminPanel from './AdminPanel';
 import CalendarViewPage from './CalendarViewPage';
 import DashboardPage from './DashboardPage';
+import CreateNewPage from './CreateNewPage';
 
 export {
   PostSchedulerPage,
@@ -13,5 +14,6 @@ export {
   ProfilePage,
   AdminPanel,
   CalendarViewPage,
-  DashboardPage
+  DashboardPage,
+  CreateNewPage
 };

@@ -1,0 +1,72 @@
+/* Auto-grow textarea styles */
+.auto-grow-textarea {
+  min-height: 4.5em; /* 3 rows at 1.5 line-height */
+  max-height: 22.5em; /* 15 rows at 1.5 line-height */
+  resize: none;
+  overflow: hidden;
+  transition: height 0.1s ease;
+  line-height: 1.5;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--text-color, #333) !important;
+  background-color: white !important;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auto-grow-textarea:focus {
+  outline: none;
+  border-color: var(--kodify-blue, #0C4399);
+  box-shadow: 0 0 0 2px rgba(12, 67, 153, 0.1);
+}
+
+.auto-grow-textarea::placeholder {
+  color: var(--lighter-text, #666);
+  opacity: 1;
+}
+
+/* Ensure consistent styling across different form contexts */
+.form-group .auto-grow-textarea,
+.ai-form-group .auto-grow-textarea {
+  color: var(--text-color, #333) !important;
+  background-color: white !important;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.form-group .auto-grow-textarea:focus,
+.ai-form-group .auto-grow-textarea:focus {
+  border-color: var(--kodify-blue, #0C4399);
+  box-shadow: 0 0 0 2px rgba(12, 67, 153, 0.1);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .auto-grow-textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 10px 12px;
+  }
+}
+
+/* Dark mode support (if needed in the future) */
+@media (prefers-color-scheme: dark) {
+  .auto-grow-textarea {
+    background-color: #2d2d2d;
+    border-color: #555;
+    color: #fff;
+  }
+  
+  .auto-grow-textarea:focus {
+    border-color: var(--kodify-orange, #ffb035);
+    box-shadow: 0 0 0 2px rgba(255, 176, 53, 0.1);
+  }
+  
+  .auto-grow-textarea::placeholder {
+    color: #aaa;
+  }
+}

@@ -1,0 +1,194 @@
+/* Company Info Page Styles */
+.company-info-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.company-info-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.page-header {
+  background: linear-gradient(135deg, var(--kodify-blue) 0%, var(--kodify-blue-light) 100%);
+  color: white;
+  padding: 30px;
+  text-align: center;
+}
+
+.page-header h1 {
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.page-description {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  opacity: 0.9;
+  line-height: 1.5;
+}
+
+.last-updated {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.company-info-form {
+  padding: 30px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-color, #333);
+  font-size: 14px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-color, #333);
+  background-color: white;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--kodify-blue, #0C4399);
+  box-shadow: 0 0 0 2px rgba(12, 67, 153, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--lighter-text, #666);
+  opacity: 1;
+}
+
+.form-actions {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color, #ddd);
+  text-align: center;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, var(--kodify-blue) 0%, var(--kodify-blue-light) 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--kodify-blue-hover) 0%, var(--kodify-blue) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(12, 67, 153, 0.2);
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--lighter-text, #666);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--kodify-blue, #0C4399);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .company-info-page {
+    padding: 10px;
+  }
+  
+  .page-header {
+    padding: 20px;
+  }
+  
+  .page-header h1 {
+    font-size: 24px;
+  }
+  
+  .page-description {
+    font-size: 14px;
+  }
+  
+  .company-info-form {
+    padding: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+    padding: 14px 16px;
+  }
+  
+  .save-btn {
+    width: 100%;
+    padding: 14px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .company-info-page {
+    padding: 5px;
+  }
+  
+  .page-header {
+    padding: 15px;
+  }
+  
+  .company-info-form {
+    padding: 15px;
+  }
+  
+  .form-actions {
+    margin-top: 20px;
+    padding-top: 15px;
+  }
+}

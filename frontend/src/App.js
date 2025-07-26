@@ -4,7 +4,7 @@ import './App.css';
 import './styles/UserMenu.css';
 import './styles/AdminPanel.css';
 import './styles/wakeup-notification.css';
-import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage, CreateNewPage } from './pages';
+import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage, CreateNewPage, CompanyInfoPage } from './pages';
 import logo from './assets/kodify_logo_white.svg';
 // Import package.json version
 import packageInfo from '../package.json';
@@ -12,6 +12,9 @@ import packageInfo from '../package.json';
 import { AuthProvider, useAuth } from './context/AuthContext';
 // Import loading context for free tier service wakeup notifications
 import { LoadingProvider } from './context/LoadingContext';
+// Import notification context and component
+import { NotificationProvider } from './context/NotificationContext';
+import NotificationContainer from './components/NotificationContainer';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
 function AppContent() {
@@ -32,7 +35,7 @@ function AppContent() {
         <div className="header-top">
           <div className="brand-container">
             <img src={logo} alt="KODIFY Logo" className="brand-logo" />
-            <h1>Welcome</h1>
+            <h1>Marketing Tool</h1>
           </div>
         </div>
         
@@ -102,6 +105,7 @@ function AppContent() {
                   <div className="user-dropdown">
                     <div className="user-role">{user.role}</div>
                     <Link to="/profile" onClick={closeMobileMenu}>My Profile</Link>
+                    <Link to="/company-info" onClick={closeMobileMenu}>Company Info</Link>
                     {user.role === 'admin' && <Link to="/admin" onClick={closeMobileMenu}>Admin Panel</Link>}
                     <button onClick={() => { logout(); closeMobileMenu(); }} className="logout-button">Logout</button>
                   </div>
@@ -148,6 +152,10 @@ function AppContent() {
           <Route index element={<ProfilePage />} />
         </Route>
         
+        <Route path="/company-info" element={<ProtectedRoute />}>
+          <Route index element={<CompanyInfoPage />} />
+        </Route>
+        
         {/* Admin-only route */}
         <Route path="/admin" element={<ProtectedRoute requiredRole="admin" />}>
           <Route index element={<AdminPanel />} />
@@ -164,14 +172,17 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <LoadingProvider>
-          <AppContent />
-          <footer className="App-footer">
-            <div className="footer-content">
-              <p>Marketing Tool v{packageInfo.version} -- Wouter Sligter, 2025</p>
-            </div>
-          </footer>
-        </LoadingProvider>
+        <NotificationProvider>
+          <LoadingProvider>
+            <AppContent />
+            <NotificationContainer />
+            <footer className="App-footer">
+              <div className="footer-content">
+                <p>Marketing Tool v{packageInfo.version} -- Wouter Sligter, 2025</p>
+              </div>
+            </footer>
+          </LoadingProvider>
+        </NotificationProvider>
       </AuthProvider>
     </Router>
   );

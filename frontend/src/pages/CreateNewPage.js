@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import api from '../utils/api';
+import { useNotification } from '../context/NotificationContext';
+import AutoGrowTextarea from '../components/AutoGrowTextarea';
 import '../styles/create-new.css';
+import '../styles/auto-grow-textarea.css';
 
 const CreateNewPage = () => {
+  const { showSuccess, showError } = useNotification();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   // Form state (similar to PostForm)
   const [content, setContent] = useState('');
@@ -102,8 +104,7 @@ const CreateNewPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-    setSuccess('');
+    // Clear any existing notifications (they auto-dismiss)
 
     try {
       const formData = new FormData();
@@ -116,30 +117,23 @@ const CreateNewPage = () => {
       formData.append('assignedUser', selectedUser === 'none' ? '' : selectedUser);
       formData.append('reviewer', selectedReviewer === 'none' ? '' : selectedReviewer);
 
-      const response = await fetch('/api/posts', {
-        method: 'POST',
+      await api.post('/api/posts', formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: formData
+          'Content-Type': 'multipart/form-data'
+        }
       });
 
-      if (response.ok) {
-        setSuccess('Post created successfully!');
-        setContent('');
-        setImage(null);
-        setImagePreview(null);
-        setScheduledDate(new Date());
-        setSelectedCampaign('none');
-        setSelectedUser('none');
-        setSelectedReviewer('none');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to create post');
-      }
+      showSuccess('Post created successfully!');
+      setContent('');
+      setImage(null);
+      setImagePreview(null);
+      setScheduledDate(new Date());
+      setSelectedCampaign('none');
+      setSelectedUser('none');
+      setSelectedReviewer('none');
     } catch (err) {
       console.error('Error creating post:', err);
-      setError('Network error occurred');
+      showError(err?.response?.data?.message || 'Network error occurred');
     } finally {
       setLoading(false);
     }
@@ -147,12 +141,12 @@ const CreateNewPage = () => {
 
   const handleGenerateContent = async () => {
     if (!userInstructions.trim()) {
-      setError('Please enter instructions for content generation');
+      showError('Please enter instructions for content generation');
       return;
     }
 
     setIsGenerating(true);
-    setError('');
+    // Clear any existing notifications
 
     try {
       const systemPrompt = selectedPrompt ? 
@@ -176,10 +170,10 @@ const CreateNewPage = () => {
         setGeneratedContent(data.content);
       } else {
         const errorData = await response.json();
-        setError(errorData.message || 'Failed to generate content');
+        showError(errorData.message || 'Failed to generate content');
       }
     } catch (err) {
-      setError('Network error occurred during content generation');
+      showError('Network error occurred during content generation');
     } finally {
       setIsGenerating(false);
     }
@@ -187,34 +181,23 @@ const CreateNewPage = () => {
 
   const handleSavePrompt = async () => {
     if (!promptName.trim() || !customSystemPrompt.trim()) {
-      setError('Please enter both prompt name and content');
+      showError('Please enter both prompt name and content');
       return;
     }
 
     try {
-      const response = await fetch('/api/system-prompts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          name: promptName,
-          content: customSystemPrompt
-        })
+      await api.post('/api/system-prompts', {
+        name: promptName,
+        content: customSystemPrompt
       });
 
-      if (response.ok) {
-        setSuccess('Prompt saved successfully!');
-        setShowSavePrompt(false);
-        setPromptName('');
-        fetchSystemPrompts(); // Refresh the list
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to save prompt');
-      }
+      showSuccess('Prompt saved successfully!');
+      setShowSavePrompt(false);
+      setPromptName('');
+      fetchSystemPrompts(); // Refresh the list
     } catch (err) {
-      setError('Network error occurred while saving prompt');
+      console.error('Error saving system prompt:', err);
+      showError(err.response?.data?.message || 'Network error occurred while saving prompt');
     }
   };
 
@@ -230,19 +213,17 @@ const CreateNewPage = () => {
         {/* Left side - Form */}
         <div className="form-section">
           <h2>Create New Item</h2>
-          
-          {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">{success}</div>}
 
           <form onSubmit={handleSubmit} className="post-form">
             <div className="form-group">
               <label htmlFor="content">Post Content:</label>
-              <textarea
+              <AutoGrowTextarea
                 id="content"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Write your post here..."
-                rows={4}
+                minRows={4}
+                maxRows={12}
                 required
               />
               <button 
@@ -374,7 +355,6 @@ const CreateNewPage = () => {
             <h3>AI Writing Assistant</h3>
             
             <div className="ai-form-group">
-              <label>System Prompt</label>
               <select
                 value={selectedPrompt}
                 onChange={(e) => {
@@ -385,7 +365,7 @@ const CreateNewPage = () => {
                   }
                 }}
               >
-                <option value="">Select existing prompt or create custom</option>
+                <option value="">Saved prompts</option>
                 {systemPrompts.map(prompt => (
                   <option key={prompt._id} value={prompt._id}>
                     {prompt.name}
@@ -395,12 +375,15 @@ const CreateNewPage = () => {
             </div>
 
             <div className="ai-form-group">
-              <label>Custom System Prompt</label>
-              <textarea
+              <label>OR 
+                <br />
+                Write a new System Prompt</label>
+              <AutoGrowTextarea
                 value={customSystemPrompt}
                 onChange={(e) => setCustomSystemPrompt(e.target.value)}
                 placeholder="Enter your system prompt here..."
-                rows={4}
+                minRows={4}
+                maxRows={10}
               />
               <button 
                 type="button" 
@@ -414,11 +397,12 @@ const CreateNewPage = () => {
 
             <div className="ai-form-group">
               <label>Specific Instructions</label>
-              <textarea
+              <AutoGrowTextarea
                 value={userInstructions}
                 onChange={(e) => setUserInstructions(e.target.value)}
                 placeholder="Enter specific instructions for content generation..."
-                rows={3}
+                minRows={3}
+                maxRows={8}
               />
             </div>
 

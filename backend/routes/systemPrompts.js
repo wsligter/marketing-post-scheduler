@@ -8,7 +8,7 @@ router.get('/', requireAuth, async (req, res) => {
   try {
     const prompts = await SystemPrompt.find({ 
       $or: [
-        { createdBy: req.user.userId },
+        { createdBy: req.user._id },
         { isPublic: true }
       ]
     }).sort({ createdAt: -1 });
@@ -32,7 +32,7 @@ router.post('/', requireAuth, async (req, res) => {
     // Check if a prompt with this name already exists for this user
     const existingPrompt = await SystemPrompt.findOne({
       name,
-      createdBy: req.user.userId
+      createdBy: req.user._id
     });
 
     if (existingPrompt) {
@@ -43,7 +43,7 @@ router.post('/', requireAuth, async (req, res) => {
       name,
       content,
       isPublic,
-      createdBy: req.user.userId
+      createdBy: req.user._id
     });
 
     await prompt.save();
@@ -61,7 +61,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     
     const prompt = await SystemPrompt.findOne({
       _id: req.params.id,
-      createdBy: req.user.userId
+      createdBy: req.user._id
     });
 
     if (!prompt) {
@@ -85,7 +85,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const prompt = await SystemPrompt.findOne({
       _id: req.params.id,
-      createdBy: req.user.userId
+      createdBy: req.user._id
     });
 
     if (!prompt) {

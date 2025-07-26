@@ -4,6 +4,9 @@ import config from '../../config';
 import { Modal } from '../common';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import AutoGrowTextarea from '../AutoGrowTextarea';
+import '../../styles/posts.css';
+import '../../styles/auto-grow-textarea.css';
 
 const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, onDeletePost }) => {
   const [content, setContent] = useState('');
@@ -409,12 +412,13 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
       <form onSubmit={handleSubmit} className="post-form">
         <div className="form-group">
           <label htmlFor="content">Post Content:</label>
-          <textarea
+          <AutoGrowTextarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write your post here..."
-            rows={4}
+            minRows={4}
+            maxRows={12}
             required
           />
         </div>

@@ -2,229 +2,83 @@
 
 A full-stack application for planning and scheduling marketing campaigns across social media platforms. Built with Node.js, React, MongoDB, and Docker.
 
-## Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
-
-- [Docker](https://www.docker.com/get-started) and Docker Compose
-- [Just](https://github.com/casey/just#installation) (optional, for simplified commands)
-
-### Run the Application
-
-**With Docker (recommended):**
+Get the application running locally in minutes:
 
 ```bash
-# Using Docker directly
+# Clone the repository
+git clone <your-repo-url>
+cd marketing_tool
+
+# Start with Docker (recommended)
 docker-compose up
 
-# OR using Just (if installed)
+# OR start with Just (if installed)
 just start
 ```
 
-**For Development (without Docker):**
-
-```bash
-# Terminal 1 - Backend
-cd backend
-npm install
-npm run dev
-
-# Terminal 2 - Frontend
-cd frontend
-npm install
-npm start
-```
-
-### Access the Application
-
+**Access the application:**
 - **Frontend:** [http://localhost:8081](http://localhost:8081)
 - **Backend API:** [http://localhost:3002](http://localhost:3002)
-- **MongoDB:** mongodb://localhost:27017/marketingapp
 
-## Features
+## ✨ Features
 
-- Create and manage marketing campaigns
-- Schedule posts for specific dates and times
-- Upload and manage images for posts via Cloudinary
-- Preview thumbnails for uploaded images
-- Track post status (draft, scheduled, published)
-- Filter posts by campaign and status
-- Calendar view for scheduled posts
-- Delete images from Cloudinary when posts are updated or deleted
+- **Campaign Management**: Create and organize marketing campaigns
+- **Post Scheduling**: Schedule posts for specific dates and times
+- **Image Management**: Upload and manage images via Cloudinary integration
+- **Calendar View**: Visual calendar for scheduled posts
+- **Status Tracking**: Track post status (draft, scheduled, published)
+- **AI Content Generation**: AI-powered writing assistance for post creation
+- **User Management**: Multi-user support with reviewer assignments
+- **Mobile Responsive**: Optimized for mobile devices
 
-## Tech Stack
+## 🛠 Tech Stack
 
-- **Frontend**: React.js with Material-UI
+- **Frontend**: React.js with responsive design
 - **Backend**: Node.js with Express
 - **Database**: MongoDB Atlas
 - **Image Storage**: Cloudinary
 - **Containerization**: Docker
+- **AI Integration**: OpenAI API
 
-## Project Structure
+## 📚 Documentation
 
-```text
-marketing_tool/
-├── backend/           # Express.js API
-│   ├── routes/        # API routes
-│   ├── models/        # Mongoose models
-│   ├── utils/         # Utility functions
-│   ├── config/        # Configuration files
-│   └── uploads/       # Temporary storage for uploads
-├── frontend/          # React frontend
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── pages/       # Page components
-│   │   └── services/    # API services
-├── database/          # MongoDB data (volume mount)
-├── docker-compose.yml # Docker configuration
-├── justfile           # Task runner for common commands
-└── README.md          # Project documentation
-```
+### Getting Started
+- **[Local Development Guide](./README_LOCAL_DEVELOPMENT.md)** - Complete setup and testing instructions
+- **[Project Structure](./README_LOCAL_DEVELOPMENT.md#project-structure)** - Understanding the codebase
 
-## Environment Variables
+### Deployment
+- **[Render Deployment (Paid)](./README_RENDER_DEPLOYMENT_PAID.md)** - Deploy to Render paid tier
+- **[Render Deployment (Free)](./README_RENDER_DEPLOYMENT_FREE.md)** - Deploy to Render free tier with optimizations
 
-### Backend (.env)
+### Configuration
+- **[Environment Variables](./LOCAL_DEVELOPMENT.md#environment-variables)** - Required configuration
+- **[Database Setup](./LOCAL_DEVELOPMENT.md#database-setup)** - MongoDB Atlas configuration
+- **[Cloudinary Setup](./LOCAL_DEVELOPMENT.md#cloudinary-integration)** - Image storage configuration
 
-```env
-# MongoDB Atlas Configuration
-MONGO_USERNAME=your_username
-MONGO_PASSWORD=your_password
-MONGO_CLUSTER=your_cluster.mongodb.net
-MONGO_APP_NAME=your_app_name
-
-# Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-# Server Configuration
-PORT=3002
-```
-
-### Frontend (.env)
-
-```env
-REACT_APP_API_URL=http://localhost:3002
-```
-
-## Database Setup
-
-The application uses MongoDB Atlas as its database. It connects to a database named `marketing-tool-tables` with two collections:
-
-1. **campaigns** - Stores marketing campaign information
-2. **posts** - Stores post content, scheduled dates, and references to campaigns
-
-When a campaign is deleted, all posts associated with that campaign will have their campaign field set to null, ensuring no orphaned references.
-
-## Cloudinary Integration
-
-This application uses Cloudinary for image storage and management. The integration includes:
-
-1. **Image Upload**: Images are uploaded to Cloudinary when creating or editing posts
-2. **Image Preview**: Thumbnails are generated client-side for preview before upload
-3. **Image Deletion**: Images are automatically deleted from Cloudinary when:
-   - A post with an image is deleted
-   - An image is removed from a post during editing
-   - A new image replaces an existing one
-
-The backend handles all Cloudinary API interactions through utility functions in `backend/utils/cloudinary-actions.js`.
-
-## Command Reference
-
-### Docker Commands
+## 🔧 Quick Commands
 
 ```bash
-# Start all services
-docker-compose up
+# Development
+just start              # Start all services
+just stop               # Stop all services
+just logs               # View logs
+just build              # Build containers
 
-# Start in background
-docker-compose up -d
-
-# Stop all services
-docker-compose down
-
-# View logs
-docker-compose logs -f
+# Version management
+just bump-patch         # Increment patch version
+just bump-minor         # Increment minor version
 ```
 
-### Just Commands
+## 🤝 Contributing
 
-If you have [Just](https://github.com/casey/just#installation) installed:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test locally using the [Local Development Guide](./LOCAL_DEVELOPMENT.md)
+5. Submit a pull request
 
-```bash
-# List all available commands
-just
-
-# Common commands
-
-just start              # Start all containers
-just start-detached     # Start in background
-just stop               # Stop all containers
-just logs               # View all logs
-just logs-service backend  # View specific service logs
-just build              # Build containers without starting
-just build-start        # Build and start containers
-just build-start-detached  # Build and start in background
-just status             # Show container status
-just bump-patch         # Increment patch version (1.0.0 -> 1.0.1)
-just bump-minor         # Increment minor version (1.0.0 -> 1.1.0)
-just bump-major         # Increment major version (1.0.0 -> 2.0.0)
-just version-bump patch # Alternative way to bump version
-
-```
-
-## Troubleshooting
-
-### Port Conflicts
-
-The application uses the following ports:
-
-- Backend: 3002
-- Frontend: 8081
-- MongoDB: 27017
-
-If you encounter port conflicts, the `just` commands will automatically attempt to kill processes using these ports before starting the containers.
-
-### Image Upload Issues
-
-If images aren't uploading properly:
-
-1. Check your Cloudinary credentials in the backend `.env` file
-2. Ensure the backend server has write permissions to the temporary uploads directory
-3. Verify network connectivity to Cloudinary's API
-
-### Database Connection Issues
-
-If you're having trouble connecting to MongoDB Atlas:
-
-1. Verify your MongoDB Atlas credentials in the backend `.env` file
-2. Check that your IP address is whitelisted in the MongoDB Atlas dashboard
-3. Make sure the `NODE_ENV` is set to `development` in docker-compose.yml
-4. Ensure you're using the standard SRV connection string format in database.js
-5. Run the test connection script: `node backend/utils/test-mongodb-connection.js`
-
-## Development Workflow
-
-1. Make changes to the code
-2. Build the containers: `just build`
-3. Start the application: `just start` or `just start-detached`
-4. View logs if needed: `just logs-follow`
-5. Stop the application when done: `just stop`
-
-## Deployment
-
-### Deploying to Render
-
-This application is ready to be deployed to Render. Follow these steps:
-
-1. Create a Render account at [render.com](https://render.com)
-2. Connect your repository to Render
-3. Create a new Blueprint instance pointing to your repository
-4. Render will automatically detect the `render.yaml` file and create the services
-5. Configure the required environment variables in the Render dashboard
-
-For detailed deployment instructions, see [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md).
-
-## License
+## 📄 License
 
 MIT

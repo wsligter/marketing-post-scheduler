@@ -92,16 +92,11 @@ async function initializeDatabase() {
       dbClient = await connectToDatabase();
       console.log('MongoDB Atlas connected');
       
-      // Get MongoDB connection string from environment variables
-      const username = process.env.MONGO_USERNAME;
-      const password = process.env.MONGO_PASSWORD;
-      const cluster = process.env.MONGO_CLUSTER;
-      const appName = process.env.MONGO_APP_NAME;
+      // Use the shared URI configuration from database.js
+      const { getMongoURI } = require('./config/database');
+      const uri = getMongoURI();
       
-      // Construct the MongoDB URI for Mongoose with additional connection options
-      const uri = `mongodb+srv://${username}:${password}@${cluster}/marketing-tool-tables?retryWrites=true&w=majority&appName=${appName}&connectTimeoutMS=30000&socketTimeoutMS=30000&maxIdleTimeMS=120000&serverSelectionTimeoutMS=30000`;
-      
-      // Connect Mongoose to the same MongoDB Atlas instance
+      // Connect Mongoose using the same configuration
       await mongoose.connect(uri);
       console.log('Mongoose connected to MongoDB Atlas');
       
@@ -116,17 +111,55 @@ async function initializeDatabase() {
       
     } catch (err) {
       retryCount++;
-      console.error(`Database connection attempt ${retryCount} failed:`, err.message);
+      console.error(`=== Database Connection Attempt ${retryCount}/${maxRetries} Failed ===`);
+      console.error('Error Type:', err.constructor.name);
+      console.error('Error Code:', err.code || 'No code');
+      console.error('Error Message:', err.message);
+      
+      // Log specific error details
+      if (err.cause) {
+        console.error('Root Cause:', err.cause.message);
+        console.error('Root Cause Code:', err.cause.code);
+      }
+      
+      if (err.reason && err.reason.servers) {
+        console.error('Server Status:');
+        for (const [server, status] of err.reason.servers) {
+          console.error(`- ${server}: ${status.error ? status.error.message : 'Unknown error'}`);
+        }
+      }
+      
+      // Environment variable check on failure
+      const requiredVars = ['MONGO_USERNAME', 'MONGO_PASSWORD', 'MONGO_CLUSTER', 'MONGO_APP_NAME'];
+      const missingVars = requiredVars.filter(varName => !process.env[varName]);
+      if (missingVars.length > 0) {
+        console.error('Missing Environment Variables:', missingVars);
+      }
       
       if (retryCount >= maxRetries) {
-        console.error('All database connection attempts failed. Server will start but database operations may fail.');
-        console.error('Full error:', err);
+        console.error('=== ALL DATABASE CONNECTION ATTEMPTS FAILED ===');
+        console.error('Server will start but database operations will fail.');
+        console.error('This means:');
+        console.error('- Login attempts will fail');
+        console.error('- API endpoints will return database errors');
+        console.error('- Application will not function properly');
+        console.error('');
+        console.error('Troubleshooting steps:');
+        console.error('1. Check your internet connection');
+        console.error('2. Verify MongoDB Atlas cluster is running');
+        console.error('3. Check environment variables in .env file');
+        console.error('4. Verify MongoDB Atlas IP whitelist settings');
+        console.error('5. Check MongoDB Atlas user permissions');
+        console.error('');
+        console.error('Full error details:');
+        console.error(err);
+        console.error('===============================================');
         break;
       }
       
       // Wait before retrying (exponential backoff)
       const waitTime = Math.pow(2, retryCount) * 1000;
-      console.log(`Waiting ${waitTime}ms before retry...`);
+      console.log(`⏳ Waiting ${waitTime}ms before retry ${retryCount + 1}/${maxRetries}...`);
       await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }

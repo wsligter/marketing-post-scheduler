@@ -1,7 +1,26 @@
 /* Global styles for consistent UI elements */
 
+/* Reserve space for vertical scrollbar to prevent layout shift between pages */
+html {
+  scrollbar-gutter: stable;
+}
+@supports not (scrollbar-gutter: stable) {
+  body {
+    overflow-y: scroll; /* Fallback to always reserve vertical scrollbar space */
+  }
+}
+
 /* Typography */
 .heading-primary {
+  color: var(--kodify-blue);
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Global section header used for panel titles across pages */
+.section-header,
+.heading-primary { /* keep heading-primary consistent */
   color: var(--kodify-blue);
   margin-bottom: 10px;
   font-weight: 600;
@@ -105,6 +124,14 @@
   box-sizing: border-box;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Shared page container to unify layout across pages */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 /* Status badges - these are overridden in component-specific CSS files */
@@ -312,4 +339,11 @@
 @keyframes slideIn {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive adjustments for shared page container */
+@media (max-width: 480px) {
+  .page-container {
+    padding: 15px;
+  }
 }

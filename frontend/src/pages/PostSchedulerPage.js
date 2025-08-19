@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { PostForm, PostsList } from '../components/posts';
+import { PostsList } from '../components/posts';
+import CreateItemForm from '../components/create/CreateItemForm';
+import AIPanel from '../components/create/AIPanel';
 import '../styles/posts.css';
 
 const PostSchedulerPage = () => {
@@ -15,6 +17,8 @@ const PostSchedulerPage = () => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [error, setError] = useState(null);
   const [editingPost, setEditingPost] = useState(null);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [setCreateFormContent, setSetCreateFormContent] = useState(null);
 
   // Fetch posts, campaigns, and users when component mounts
   useEffect(() => {
@@ -189,19 +193,29 @@ const PostSchedulerPage = () => {
   };
 
   return (
-    <div className="social-media-scheduler">
+    <div className="social-media-scheduler page-container">
       <div className="scheduler-container">
         <div className="form-section">
-          <PostForm 
-            onPostCreated={handlePostCreated}
-            onPostUpdated={handlePostUpdated}
+          <CreateItemForm 
             editingPost={editingPost}
-            setEditingPost={setEditingPost}
-            onDeletePost={handleDeletePost}
+            onCreated={handlePostCreated}
+            onUpdated={(post) => handlePostUpdated(post)}
+            onCancelled={() => setEditingPost(null)}
+            onDeleted={(id) => handleDeletePost(id)}
+            onRequestAIPanelToggle={() => setShowAIPanel((v) => !v)}
+            registerSetContent={(fn) => setSetCreateFormContent(() => fn)}
           />
         </div>
         
         <div className="posts-section">
+          <AIPanel 
+            visible={showAIPanel}
+            onClose={() => setShowAIPanel(false)}
+            onUseContent={(text) => {
+              if (setCreateFormContent) setCreateFormContent(text);
+              setShowAIPanel(false);
+            }}
+          />
           <PostsList 
             posts={posts} 
             loading={loading} 

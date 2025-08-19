@@ -191,7 +191,7 @@ const AdminPanel = () => {
   // Don't allow non-admin users to access this page
   if (currentUser?.role !== 'admin') {
     return (
-      <div className="admin-container">
+      <div className="admin-container page-container">
         <div className="admin-panel">
           <h2>Access Denied</h2>
           <p>You do not have permission to access the admin panel.</p>
@@ -215,7 +215,7 @@ const AdminPanel = () => {
   };
 
   return (
-    <div className="admin-container">
+    <div className="admin-container page-container">
       <div className="admin-panel">
         <h2>Admin Panel - User Management</h2>
         

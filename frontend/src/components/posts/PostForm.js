@@ -8,14 +8,13 @@ import AutoGrowTextarea from '../AutoGrowTextarea';
 import '../../styles/posts.css';
 import '../../styles/auto-grow-textarea.css';
 
-const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, onDeletePost }) => {
+const PostForm = ({ onPostUpdated, editingPost, setEditingPost, onDeletePost }) => {
   const [content, setContent] = useState('');
   const [scheduledDate, setScheduledDate] = useState(new Date());
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState('none');
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
@@ -37,47 +36,40 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
   
   // Effect to populate form when editingPost changes
   useEffect(() => {
-    if (editingPost) {
-      setContent(editingPost.content);
-      setScheduledDate(new Date(editingPost.scheduledDate));
-      setIsEditing(true);
-      
-      // Set campaign if post has one
-      if (editingPost.campaign) {
-        setSelectedCampaign(editingPost.campaign._id);
+    if (!editingPost) return;
+    setContent(editingPost.content);
+    setScheduledDate(new Date(editingPost.scheduledDate));
+
+    // Set campaign if post has one
+    if (editingPost.campaign) {
+      setSelectedCampaign(editingPost.campaign._id);
+    } else {
+      setSelectedCampaign('none');
+    }
+
+    // Set assigned user if post has one
+    if (editingPost.assignedUser) {
+      setSelectedUser(editingPost.assignedUser._id);
+    } else {
+      setSelectedUser('none');
+    }
+
+    // Set reviewer if post has one
+    if (editingPost.reviewer) {
+      setSelectedReviewer(editingPost.reviewer._id);
+    } else {
+      setSelectedReviewer('none');
+    }
+
+    // Set image preview if post has an image
+    if (editingPost.imageUrl) {
+      if (editingPost.imageUrl.startsWith('http')) {
+        createRemoteImageThumbnail(editingPost.imageUrl);
       } else {
-        setSelectedCampaign('none');
-      }
-      
-      // Set assigned user if post has one
-      if (editingPost.assignedUser) {
-        setSelectedUser(editingPost.assignedUser._id);
-      } else {
-        setSelectedUser('none');
-      }
-      
-      // Set reviewer if post has one
-      if (editingPost.reviewer) {
-        setSelectedReviewer(editingPost.reviewer._id);
-      } else {
-        setSelectedReviewer('none');
-      }
-      
-      // Set image preview if post has an image
-      if (editingPost.imageUrl) {
-        // For Cloudinary URLs, we can use them directly
-        // For local URLs, we need to prepend the API URL
-        if (editingPost.imageUrl.startsWith('http')) {
-          // Create thumbnail from remote image
-          createRemoteImageThumbnail(editingPost.imageUrl);
-        } else {
-          createRemoteImageThumbnail(`${config.apiUrl}${editingPost.imageUrl}`);
-        }
-      } else {
-        setImagePreview(null);
+        createRemoteImageThumbnail(`${config.apiUrl}${editingPost.imageUrl}`);
       }
     } else {
-      resetForm();
+      setImagePreview(null);
     }
   }, [editingPost]);
   
@@ -177,7 +169,6 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
     setScheduledDate(new Date());
     setImage(null);
     setImagePreview(null);
-    setIsEditing(false);
     setSelectedCampaign('none');
     setSelectedUser('none');
     setSelectedReviewer('none');
@@ -327,86 +318,37 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
         console.log('No image attached');
       }
       
-      // If editing and the removeImage flag is set, tell the server to remove the image
-      if (isEditing && removeImage) {
+      // If the removeImage flag is set, tell the server to remove the image
+      if (removeImage) {
         console.log('Removing existing image');
         formData.append('removeImage', 'true');
       }
       
-      // Log all form data entries
-      console.log('Form data entries:');
-      for (let pair of formData.entries()) {
-        if (pair[0] === 'image') {
-          console.log(pair[0], 'File object');
-        } else {
-          console.log(pair[0], pair[1]);
+      // Update existing post (only mode supported)
+      console.log('Updating existing post:', editingPost._id);
+      const response = await api.put(`/api/posts/${editingPost._id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      }
-      
-      let response;
-      
-      if (isEditing) {
-        // Update existing post
-        console.log('Updating existing post:', editingPost._id);
-        try {
-          response = await api.put(`/api/posts/${editingPost._id}`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-          
-          console.log('Update post response:', response);
-          
-          // Notify parent component that post was updated
-          if (onPostUpdated) {
-            console.log('Calling onPostUpdated with:', response.data);
-            onPostUpdated(response.data);
-          }
-          
-          // Clear editing state
-          setEditingPost(null);
-        } catch (updateErr) {
-          console.error('Error updating post:', updateErr);
-          console.error('Update error details:', updateErr.response ? updateErr.response.data : 'No response data');
-          throw updateErr; // Re-throw to be caught by outer catch
-        }
-      } else {
-        // Create new post
-        console.log('Creating new post');
-        try {
-          response = await api.post('/api/posts', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          });
-          
-          console.log('Create post response:', response);
-          
-          // Notify parent component that post was created
-          if (onPostCreated) {
-            console.log('Calling onPostCreated with:', response.data);
-            onPostCreated(response.data);
-          }
-        } catch (createErr) {
-          console.error('Error creating post:', createErr);
-          console.error('Create error details:', createErr.response ? createErr.response.data : 'No response data');
-          throw createErr; // Re-throw to be caught by outer catch
-        }
-      }
+      });
+
+      console.log('Update post response:', response);
+      if (onPostUpdated) onPostUpdated(response.data);
+      setEditingPost(null);
       
       // Reset the form
       resetForm();
       setLoading(false);
     } catch (err) {
-      setError(`Failed to ${isEditing ? 'update' : 'add'} post. Please try again.`);
-      console.error(`Error ${isEditing ? 'updating' : 'adding'} post:`, err);
+      setError('Failed to update post. Please try again.');
+      console.error('Error updating post:', err);
       setLoading(false);
     }
   };
 
   return (
     <div className="post-form-container">
-      <h2>{isEditing ? 'Edit' : 'Add'} Item</h2>
+      <h2>Edit Item</h2>
       {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit} className="post-form">
@@ -442,10 +384,8 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
                 onClick={() => {
                   setImage(null);
                   setImagePreview(null);
-                  // Set flag to remove image if we're editing an existing post
-                  if (isEditing) {
-                    setRemoveImage(true);
-                  }
+                  // Mark image for removal on save
+                  setRemoveImage(true);
                 }}
               >
                 Remove
@@ -541,33 +481,27 @@ const PostForm = ({ onPostCreated, onPostUpdated, editingPost, setEditingPost, o
             className="submit-btn" 
             disabled={loading}
           >
-            {loading ? (isEditing ? 'Updating...' : 'Adding...') : (isEditing ? 'Update Post' : 'Add Post')}
+            {loading ? 'Updating...' : 'Update Post'}
           </button>
-          
-          {isEditing && (
-            <button 
-              type="button" 
-              className="cancel-btn" 
-              onClick={() => {
-                setEditingPost(null);
-                resetForm();
-              }}
-              disabled={loading}
-            >
-              Cancel
-            </button>
-          )}
-          
-          {isEditing && (
-            <button 
-              type="button" 
-              className="delete-btn" 
-              onClick={() => setShowDeleteModal(true)}
-              disabled={loading}
-            >
-              Delete Post
-            </button>
-          )}
+          <button 
+            type="button" 
+            className="cancel-btn" 
+            onClick={() => {
+              setEditingPost(null);
+              resetForm();
+            }}
+            disabled={loading}
+          >
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            className="delete-btn" 
+            onClick={() => setShowDeleteModal(true)}
+            disabled={loading}
+          >
+            Delete Post
+          </button>
         </div>
       </form>
       

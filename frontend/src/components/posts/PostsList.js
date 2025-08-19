@@ -39,7 +39,7 @@ const PostsList = ({
 
   return (
     <div className="posts-list">
-      <h2>Upcoming Publications</h2>
+      <h2 className="section-header">Upcoming Publications</h2>
       
       {/* Filter Container */}
       <div className="filter-container">

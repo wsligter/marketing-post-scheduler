@@ -178,10 +178,6 @@ const DashboardPage = () => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-        <h1>Dashboard</h1>
-        <p>Welcome back, {user.firstName}!</p>
-      </div>
 
       {/* Notification Bar */}
       {upcomingPost && (
@@ -221,74 +217,7 @@ const DashboardPage = () => {
       )}
 
       <div className="dashboard-content">
-        {/* Calendar Section */}
-        <div className="calendar-section">
-          
-          {/* This Week */}
-          <div className="week-section">
-            <h3>This Week</h3>
-            <div className="week-list">
-              {thisWeekDays.map((day, index) => {
-                const postsForDay = getPostsForDate(day);
-                const isToday = day.toDateString() === new Date().toDateString();
-                
-                return (
-                  <div key={index} className={`day-item ${isToday ? 'today' : ''}`}>
-                    <div className="day-header">
-                      <span className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                      <span className="day-date">{day.getDate()}</span>
-                    </div>
-                    <div className="day-posts">
-                      {postsForDay.length > 0 ? (
-                        postsForDay.map(post => (
-                          <div key={post._id} className="day-post">
-                            {/* <span className="post-time">{formatTime(post.scheduledDate)}</span> */}
-                            <span className="post-preview">{post.content.substring(0, 30)}...</span>
-                          </div>
-                        ))
-                      ) : (
-                        <span className="no-posts">No posts</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Next Week */}
-          <div className="week-section">
-            <h3>Next Week</h3>
-            <div className="week-list">
-              {nextWeekDays.map((day, index) => {
-                const postsForDay = getPostsForDate(day);
-                
-                return (
-                  <div key={index} className="day-item">
-                    <div className="day-header">
-                      <span className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                      <span className="day-date">{day.getDate()}</span>
-                    </div>
-                    <div className="day-posts">
-                      {postsForDay.length > 0 ? (
-                        postsForDay.map(post => (
-                          <div key={post._id} className="day-post">
-                            {/* <span className="post-time">{formatTime(post.scheduledDate)}</span> */}
-                            <span className="post-preview">{post.content.substring(0, 30)}...</span>
-                          </div>
-                        ))
-                      ) : (
-                        <span className="no-posts">No posts</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Unified Posts Section */}
+        {/* Unified Posts Section (moved left) */}
         <div className="my-posts-section">
           <h2>My Items & Reviews</h2>
           {userPosts.length > 0 ? (
@@ -375,6 +304,73 @@ const DashboardPage = () => {
               <p>Visit the Post Scheduler to create your first post!</p>
             </div>
           )}
+        </div>
+
+        {/* Calendar Section (moved right) */}
+        <div className="calendar-section">
+          
+          {/* This Week */}
+          <div className="week-section">
+            <h3>This Week</h3>
+            <div className="week-list">
+              {thisWeekDays.map((day, index) => {
+                const postsForDay = getPostsForDate(day);
+                const isToday = day.toDateString() === new Date().toDateString();
+                
+                return (
+                  <div key={index} className={`day-item ${isToday ? 'today' : ''}`}>
+                    <div className="day-header">
+                      <span className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                      <span className="day-date">{day.getDate()}</span>
+                    </div>
+                    <div className="day-posts">
+                      {postsForDay.length > 0 ? (
+                        postsForDay.map(post => (
+                          <div key={post._id} className="day-post">
+                            {/* <span className="post-time">{formatTime(post.scheduledDate)}</span> */}
+                            <span className="post-preview">{post.content.substring(0, 30)}...</span>
+                          </div>
+                        ))
+                      ) : (
+                        <span className="no-posts">No posts</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Next Week */}
+          <div className="week-section">
+            <h3>Next Week</h3>
+            <div className="week-list">
+              {nextWeekDays.map((day, index) => {
+                const postsForDay = getPostsForDate(day);
+                
+                return (
+                  <div key={index} className="day-item">
+                    <div className="day-header">
+                      <span className="day-name">{day.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                      <span className="day-date">{day.getDate()}</span>
+                    </div>
+                    <div className="day-posts">
+                      {postsForDay.length > 0 ? (
+                        postsForDay.map(post => (
+                          <div key={post._id} className="day-post">
+                            {/* <span className="post-time">{formatTime(post.scheduledDate)}</span> */}
+                            <span className="post-preview">{post.content.substring(0, 30)}...</span>
+                          </div>
+                        ))
+                      ) : (
+                        <span className="no-posts">No posts</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
       

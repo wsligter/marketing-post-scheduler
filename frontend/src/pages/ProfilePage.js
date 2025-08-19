@@ -97,7 +97,7 @@ const ProfilePage = () => {
   };
   
   return (
-    <div className="auth-container">
+    <div className="auth-container page-container">
       <div className="auth-form-container" style={{ maxWidth: '600px' }}>
         <h2>My Profile</h2>
         

@@ -93,7 +93,7 @@ function CampaignsPage() {
   };
 
   return (
-    <div className="campaign-manager">
+    <div className="campaign-manager page-container">
       <div className="scheduler-container">
         <div className="form-section">
           <CampaignForm 
@@ -107,7 +107,7 @@ function CampaignsPage() {
 
         <div className="posts-section">
           <div className="posts-list">
-            <h2>Your Campaigns</h2>
+            <h2 className="section-header">Your Campaigns</h2>
             <CampaignsList 
               campaigns={campaigns || []}
               loading={loading}

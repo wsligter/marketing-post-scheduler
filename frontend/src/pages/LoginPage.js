@@ -64,7 +64,7 @@ const LoginPage = () => {
   };
   
   return (
-    <div className="auth-container">
+    <div className="auth-container page-container">
       <div className="auth-form-container">
         <h2>Login to the Marketing App</h2>
         

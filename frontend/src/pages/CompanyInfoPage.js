@@ -83,7 +83,7 @@ const CompanyInfoPage = () => {
 
   if (loading) {
     return (
-      <div className="company-info-page">
+      <div className="company-info-page page-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p>Loading company information...</p>
@@ -93,7 +93,7 @@ const CompanyInfoPage = () => {
   }
 
   return (
-    <div className="company-info-page">
+    <div className="company-info-page page-container">
       <div className="company-info-container">
         <div className="page-header">
           <h1>Company Information</h1>

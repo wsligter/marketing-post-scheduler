@@ -289,7 +289,7 @@
 /* Dashboard Content */
 .dashboard-content {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 2fr;
   gap: 20px;
 }
 
@@ -430,6 +430,16 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  border: none;
+}
+
+/* Remove wrapper visuals inherited from global posts.css inside the dashboard */
+.my-posts-section .posts-list {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
 }
 
 .post-item {

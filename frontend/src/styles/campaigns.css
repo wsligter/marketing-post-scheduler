@@ -22,7 +22,9 @@
   gap: 15px;
   padding: 15px;
   border-radius: 8px;
-  box-shadow: var(--shadow);
+  box-shadow: none; /* Avoid outside panel shadow; unified page container handles layout */
+  background: transparent; /* Ensure no background panel */
+  border: none; /* Avoid outside border */
   box-sizing: border-box;
   width: 100%;
 }
@@ -39,6 +41,32 @@
   padding: 15px;
   border-radius: 8px;
   box-shadow: var(--shadow);
+}
+
+/* Column containers should match Dashboard 'My Items & Reviews' panel styling */
+.campaign-manager .form-section,
+.campaign-manager .posts-section {
+  background-color: var(--kodify-white);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  height: fit-content;
+}
+
+/* Neutralize inner containers to prevent double borders/padding inside the column panels */
+.campaign-manager .form-section .campaign-form-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.campaign-manager .posts-section .posts-list {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 .campaign-manager .posts-list h2 {
@@ -272,6 +300,8 @@
   font-weight: 600;
 }
 
+/* (no hover effect for the form container) */
+
 .campaign-form .form-group {
   margin-bottom: 15px;
 }
@@ -428,4 +458,13 @@
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
+}
+
+/* Remove inner container visuals so it matches 'My Items & Reviews' panel style */
+.campaign-manager .campaign-form-container {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }

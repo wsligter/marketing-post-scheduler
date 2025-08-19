@@ -120,6 +120,7 @@ function AppContent() {
         ) : null}
       </header>
       
+      <main className="App-main">
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
@@ -164,6 +165,12 @@ function AppContent() {
         {/* Redirect to dashboard if authenticated, login if not */}
         <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
       </Routes>
+      </main>
+      <footer className="App-footer">
+        <div className="footer-content">
+          <p>Marketing Tool v{packageInfo.version} -- Wouter Sligter, 2025</p>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -176,11 +183,6 @@ function App() {
           <LoadingProvider>
             <AppContent />
             <NotificationContainer />
-            <footer className="App-footer">
-              <div className="footer-content">
-                <p>Marketing Tool v{packageInfo.version} -- Wouter Sligter, 2025</p>
-              </div>
-            </footer>
           </LoadingProvider>
         </NotificationProvider>
       </AuthProvider>

@@ -22,6 +22,10 @@
   margin: 0 auto;
   padding: 10px;
   font-size: 14px;
+  display: flex;              /* Enable flex layout for sticky footer */
+  flex-direction: column;     /* Stack header, main, footer vertically */
+  min-height: 100vh;          /* Allow footer to stick to bottom on short pages */
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -29,6 +33,12 @@
     padding: 5px;
     font-size: 16px; /* Larger font for mobile readability */
   }
+}
+
+/* Main content should take remaining space to push footer down */
+.App-main {
+  flex: 1;
+  display: block;
 }
 
 .App-header {
@@ -506,7 +516,7 @@ textarea {
 }
 
 .App-footer {
-  margin-top: 30px;
+  margin-top: 20px;            /* Unified spacing above footer */
   padding: 10px;
   background-color: transparent;
   text-align: center;

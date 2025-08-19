@@ -44,17 +44,23 @@ cp frontend/.env.example frontend/.env
 
 ### 3. Start the Application
 
-**Option A: Docker (Recommended)**
+#### Option A: Docker (Recommended)
 
 ```bash
 # Start all services
 docker-compose up
 
-# OR with Just
+# OR with Just (opens browser automatically)
 just start
+
+# Development mode (frontend and backend auto-reload with nodemon)
+just start-dev
+
+# Equivalent plain Docker (dev override)
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
-**Option B: Manual Setup**
+#### Option B: Manual Setup
 
 ```bash
 # Terminal 1 - Backend
@@ -120,7 +126,7 @@ REACT_APP_API_URL=http://localhost:3002
 
    ```bash
    cd backend
-   node utils/test-mongodb-connection.js
+   node utils/test-db-connection.js
    ```
 
 ### Option 2: Local MongoDB
@@ -172,7 +178,7 @@ marketing_tool/
 │   ├── utils/              # Utility functions
 │   │   ├── cloudinary-actions.js
 │   │   ├── keep-alive.js   # Free tier optimization
-│   │   └── test-mongodb-connection.js
+│   │   └── test-db-connection.js
 │   ├── .env.example        # Environment template
 │   ├── package.json        # Dependencies
 │   └── server.js           # Entry point
@@ -187,7 +193,8 @@ marketing_tool/
 │   │   └── index.js        # Entry point
 │   ├── .env.example        # Environment template
 │   └── package.json        # Dependencies
-├── docker-compose.yml      # Docker configuration
+├── docker-compose.yml      # Docker configuration (default)
+├── docker-compose.dev.yml  # Dev override (nodemon for backend)
 ├── justfile               # Task automation
 └── README.md              # Main documentation
 ```
@@ -237,7 +244,7 @@ curl http://localhost:3002/api/health
 
 ```bash
 cd backend
-node utils/test-mongodb-connection.js
+node utils/test-db-connection.js
 ```
 
 **API Endpoints**:
@@ -314,6 +321,7 @@ just
 
 # Development commands
 just start                    # Start all containers
+just start-dev                # Start with backend nodemon auto-reload
 just start-detached          # Start in background
 just stop                    # Stop containers
 just logs                    # View logs

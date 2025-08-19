@@ -2,25 +2,44 @@
 
 A full-stack application for planning and scheduling marketing campaigns across social media platforms. Built with Node.js, React, MongoDB, and Docker.
 
-## 🚀 Quick Start
+## 🚀 Quick Start (no .env yet)
 
-Get the application running locally in minutes:
+Get the app running locally in 3 steps.
 
+1) Clone the repo
 ```bash
-# Clone the repository
 git clone <your-repo-url>
 cd marketing_tool
-
-# Start with Docker (recommended)
-docker-compose up
-
-# OR start with Just (if installed)
-just start
 ```
 
-**Access the application:**
-- **Frontend:** [http://localhost:8081](http://localhost:8081)
-- **Backend API:** [http://localhost:3002](http://localhost:3002)
+2) Create your backend environment file
+```bash
+cp backend/.env.example backend/.env
+# then edit backend/.env and fill in:
+# - MONGO_USERNAME
+# - MONGO_PASSWORD
+# - MONGO_CLUSTER  (e.g. cluster-name.xxxxx.mongodb.net)
+# - MONGO_APP_NAME (any label, e.g. marketing-tool)
+# Optional: JWT_SECRET, Cloudinary keys
+```
+
+3) Start the stack
+```bash
+# Using Just (recommended) – handles clean start, logs, ports
+just start
+
+# Or using Docker directly
+docker-compose up --build
+```
+
+For development with frontend (React) and backend (Node.js) auto-reload (nodemon):
+```bash
+just start-dev
+```
+
+When running:
+- **Frontend:** http://localhost:8081
+- **Backend API:** http://localhost:3002
 
 ## ✨ Features
 
@@ -53,15 +72,16 @@ just start
 - **[Render Deployment (Free)](./README_RENDER_DEPLOYMENT_FREE.md)** - Deploy to Render free tier with optimizations
 
 ### Configuration
-- **[Environment Variables](./LOCAL_DEVELOPMENT.md#environment-variables)** - Required configuration
-- **[Database Setup](./LOCAL_DEVELOPMENT.md#database-setup)** - MongoDB Atlas configuration
-- **[Cloudinary Setup](./LOCAL_DEVELOPMENT.md#cloudinary-integration)** - Image storage configuration
+- **[Environment Variables](./README_LOCAL_DEVELOPMENT.md#environment-variables)** - Required configuration
+- **[Database Setup](./README_LOCAL_DEVELOPMENT.md#database-setup)** - MongoDB Atlas configuration
+- **[Cloudinary Setup](./README_LOCAL_DEVELOPMENT.md#cloudinary-integration)** - Image storage configuration
 
 ## 🔧 Quick Commands
 
 ```bash
 # Development
-just start              # Start all services
+just start              # Start all services (Docker)
+just start-dev          # Start with frontend and backend nodemon auto-reload
 just stop               # Stop all services
 just logs               # View logs
 just build              # Build containers

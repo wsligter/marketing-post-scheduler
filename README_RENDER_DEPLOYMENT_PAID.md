@@ -17,6 +17,13 @@ Before deploying, ensure you have:
    - API secret
 4. **OpenAI API Key** (optional): For AI content generation features
 
+> Developer note: For local development with frontend and backend auto-reload (nodemon), run:
+> 
+> ```bash
+> just start-dev
+> ```
+> This uses the dev compose override to run the frontend and backend with nodemon. Normal `just start` remains available.
+
 ## Deployment Steps
 
 ### 1. Repository Setup

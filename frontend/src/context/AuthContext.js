@@ -149,7 +149,14 @@ export const AuthProvider = ({ children }) => {
       }
       
       console.log('Final user state after login:', user);
-      
+      // Redirect to dashboard on successful login
+      try {
+        // Use replace to avoid keeping /login in history
+        window.location.assign('/dashboard');
+      } catch (navErr) {
+        console.warn('Navigation to /dashboard failed, continuing:', navErr);
+      }
+
       return true;
     } catch (err) {
       console.error('Login error occurred:', err);
@@ -307,6 +314,13 @@ export const AuthProvider = ({ children }) => {
       
       // Set user state
       setUser(user);
+      
+      // Redirect to dashboard after successful registration
+      try {
+        window.location.assign('/dashboard');
+      } catch (navErr) {
+        console.warn('Navigation to /dashboard failed after registration:', navErr);
+      }
       
       return true;
     } catch (error) {

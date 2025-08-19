@@ -18,6 +18,13 @@ Render's free tier has these constraints:
 3. **Cloudinary Account**: Free tier for image storage
 4. **OpenAI API Key** (optional): For AI features
 
+> Developer note: For local development with frontend and backend auto-reload (nodemon), run:
+>
+> ```bash
+> just start-dev
+> ```
+> This uses the dev compose override to run the frontend and backend with nodemon. Normal `just start` remains available.
+
 ## Deployment Steps
 
 ### 1. Repository Setup

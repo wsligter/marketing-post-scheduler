@@ -38,6 +38,7 @@ const AdminPanel = () => {
   const [error, setError] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [addingUser, setAddingUser] = useState(false);
+  const [resetInfo, setResetInfo] = useState(null); // { email, url, token, expiresAt }
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -185,6 +186,39 @@ const AdminPanel = () => {
       console.error('Error deleting user:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Generate a one-time password reset link for a user (admin only)
+  const handleGenerateReset = async (u) => {
+    setError(null);
+    setSuccessMessage('');
+    try {
+      setLoading(true);
+      const res = await api.post(`/api/users/${u._id}/generate-reset`);
+      const { resetUrl, resetToken, expiresAt } = res.data || {};
+      setResetInfo({
+        email: u.email,
+        url: resetUrl || '',
+        token: resetToken || '',
+        expiresAt: expiresAt || null
+      });
+      setSuccessMessage('Reset link generated. Share it securely with the user.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to generate reset link');
+      console.error('Generate reset error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Copy helper for URL/token
+  const handleCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setSuccessMessage('Copied to clipboard');
+    } catch {
+      setError('Failed to copy to clipboard');
     }
   };
 
@@ -383,6 +417,32 @@ const AdminPanel = () => {
           </div>
         ) : (
           <>
+            {resetInfo && (
+              <div className="reset-panel">
+                <h4>Password Reset Link</h4>
+                <p><strong>User:</strong> {resetInfo.email}</p>
+                <div className="form-group">
+                  <label>Reset URL</label>
+                  <div className="copy-row">
+                    <input type="text" value={resetInfo.url} readOnly onFocus={(e) => e.target.select()} />
+                    <button type="button" className="btn-secondary" onClick={() => handleCopy(resetInfo.url)}>Copy URL</button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>One-time Token</label>
+                  <div className="copy-row">
+                    <input type="text" value={resetInfo.token} readOnly onFocus={(e) => e.target.select()} />
+                    <button type="button" className="btn-secondary" onClick={() => handleCopy(resetInfo.token)}>Copy Token</button>
+                  </div>
+                </div>
+                {resetInfo.expiresAt && (
+                  <p className="hint">Expires at: {formatDate(resetInfo.expiresAt)}</p>
+                )}
+                <div className="form-actions">
+                  <button type="button" className="btn-secondary" onClick={() => setResetInfo(null)}>Hide</button>
+                </div>
+              </div>
+            )}
             <div className="users-header">
               <h3>Users</h3>
               <button className="btn-add" onClick={handleAddUserClick}>
@@ -426,6 +486,12 @@ const AdminPanel = () => {
                               onClick={() => handleEditClick(user)}
                             >
                               Edit
+                            </button>
+                            <button 
+                              className="btn-secondary" 
+                              onClick={() => handleGenerateReset(user)}
+                            >
+                              Generate Reset Link
                             </button>
                             {/* Don't allow deleting your own account */}
                             {user._id !== currentUser?._id && (

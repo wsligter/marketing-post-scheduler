@@ -7,6 +7,7 @@ import CalendarViewPage from './CalendarViewPage';
 import DashboardPage from './DashboardPage';
 import CreateNewPage from './CreateNewPage';
 import CompanyInfoPage from './CompanyInfoPage';
+import ResetPasswordPage from './ResetPasswordPage';
 
 export {
   PostSchedulerPage,
@@ -17,5 +18,6 @@ export {
   CalendarViewPage,
   DashboardPage,
   CreateNewPage,
-  CompanyInfoPage
+  CompanyInfoPage,
+  ResetPasswordPage
 };

@@ -4,7 +4,7 @@ import './App.css';
 import './styles/UserMenu.css';
 import './styles/AdminPanel.css';
 import './styles/wakeup-notification.css';
-import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage, CreateNewPage, CompanyInfoPage } from './pages';
+import { CampaignsPage, PostSchedulerPage, LoginPage, ProfilePage, AdminPanel, CalendarViewPage, DashboardPage, CreateNewPage, CompanyInfoPage, ResetPasswordPage } from './pages';
 import logo from './assets/kodify_logo_white.svg';
 // Import package.json version
 import packageInfo from '../package.json';
@@ -124,6 +124,7 @@ function AppContent() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <LoginPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         
         {/* Default route redirects to login or dashboard based on authentication status */}
         <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />

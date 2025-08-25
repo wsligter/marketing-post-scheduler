@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const { generateToken } = require('../middleware/auth');
+const crypto = require('crypto');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -36,6 +37,88 @@ exports.registerUser = async (req, res) => {
   } catch (error) {
     console.error('Register user error:', error);
     res.status(500).json({ message: 'Server error during registration', error: error.message });
+  }
+};
+
+// Admin: Generate a one-time password reset token and return a copyable URL
+exports.generatePasswordReset = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const adminUser = req.user;
+
+    if (!adminUser || adminUser.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admin privileges required.' });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate secure random token
+    const rawToken = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+    user.passwordResetTokenHash = tokenHash;
+    user.passwordResetExpiresAt = expiresAt;
+    user.updatedAt = Date.now();
+    await user.save();
+
+    // Build a reset URL for convenience
+    const baseFromEnv = process.env.APP_BASE_URL || process.env.FRONTEND_BASE_URL || '';
+    const origin = req.headers.origin || baseFromEnv;
+    const resetPath = '/reset-password?token=' + rawToken;
+    const resetUrl = origin ? `${origin.replace(/\/$/, '')}${resetPath}` : resetPath;
+
+    return res.json({
+      message: 'Reset token generated',
+      resetToken: rawToken,
+      resetUrl,
+      expiresAt
+    });
+  } catch (error) {
+    console.error('Generate password reset error:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Public: Reset password using token
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: 'Token and newPassword are required' });
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      passwordResetTokenHash: tokenHash,
+      passwordResetExpiresAt: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    // Set new password via virtual to re-hash
+    user.password = newPassword;
+    // Invalidate token
+    user.passwordResetTokenHash = null;
+    user.passwordResetExpiresAt = null;
+    user.updatedAt = Date.now();
+    await user.save();
+
+    return res.json({ message: 'Password has been reset successfully' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 

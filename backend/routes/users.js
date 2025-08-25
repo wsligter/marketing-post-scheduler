@@ -6,6 +6,7 @@ const { requireAuth, requireAdmin } = require('../middleware/auth');
 // Public routes
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
+router.post('/reset-password', userController.resetPassword);
 
 // Protected routes - require authentication
 router.get('/profile', requireAuth, userController.getUserProfile);
@@ -17,5 +18,6 @@ router.get('/', requireAuth, requireAdmin, userController.getUsers);
 router.get('/:id', requireAuth, requireAdmin, userController.getUserById);
 router.put('/:id', requireAuth, requireAdmin, userController.updateUser);
 router.delete('/:id', requireAuth, requireAdmin, userController.deleteUser);
+router.post('/:id/generate-reset', requireAuth, requireAdmin, userController.generatePasswordReset);
 
 module.exports = router;

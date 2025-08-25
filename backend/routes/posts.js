@@ -269,8 +269,12 @@ router.patch('/:id/publish-status', requireAuth, async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
     
-    // Check if user owns the post or is admin
-    if (post.assignedUser._id.toString() !== req.user.id && req.user.role !== 'admin') {
+    // Check if user owns the post or is admin (handle null assignedUser safely)
+    const isAdmin = req.user.role === 'admin';
+    const isOwner = !!post.assignedUser && (
+      (post.assignedUser._id ? post.assignedUser._id.toString() : post.assignedUser.toString()) === req.user.id
+    );
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to update publish status' });
     }
     
@@ -298,8 +302,10 @@ router.delete('/:id', requireAuth, async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
     
-    // Check if user owns the post or is admin
-    if (post.assignedUser.toString() !== req.user.id && req.user.role !== 'admin') {
+    // Check if user owns the post or is admin (handle null assignedUser safely)
+    const isAdmin = req.user.role === 'admin';
+    const isOwner = !!post.assignedUser && (post.assignedUser.toString() === req.user.id);
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({ message: 'Not authorized to delete this post' });
     }
     

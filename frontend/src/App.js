@@ -106,6 +106,13 @@ function AppContent() {
                     <div className="user-role">{user.role}</div>
                     <Link to="/profile" onClick={closeMobileMenu}>My Profile</Link>
                     <Link to="/company-info" onClick={closeMobileMenu}>Company Info</Link>
+                    <a
+                      href="https://github.com/wsligter/marketing-post-scheduler/commits/main/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Project Changelog
+                    </a>
                     {user.role === 'admin' && <Link to="/admin" onClick={closeMobileMenu}>Admin Panel</Link>}
                     <button onClick={() => { logout(); closeMobileMenu(); }} className="logout-button">Logout</button>
                   </div>

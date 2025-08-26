@@ -146,7 +146,10 @@ const CreateItemForm = ({
       formData.append('scheduledDate', dateToSubmit.toISOString());
       formData.append('campaign', selectedCampaign === 'none' ? '' : selectedCampaign);
       formData.append('assignedUser', selectedUser === 'none' ? '' : selectedUser);
-      formData.append('reviewer', selectedReviewer === 'none' ? '' : selectedReviewer);
+      // Only include reviewer when editing an existing post; new items should not set reviewer from this form
+      if (editingPost) {
+        formData.append('reviewer', selectedReviewer === 'none' ? '' : selectedReviewer);
+      }
       if (editingPost && removeImage) {
         formData.append('removeImage', 'true');
       }
@@ -280,25 +283,26 @@ const CreateItemForm = ({
             </select>
             {loadingUsers && <span className="loading-text">Loading users...</span>}
           </div>
-
-          <div className="form-group">
-            <label htmlFor="create-item-reviewer">Reviewer (optional):</label>
-            <select
-              id="create-item-reviewer"
-              value={selectedReviewer}
-              onChange={(e) => setSelectedReviewer(e.target.value)}
-              className="user-select"
-              disabled={loadingUsers}
-            >
-              <option value="none">-- No Reviewer --</option>
-              {users.map(user => (
-                <option key={user._id} value={user._id}>
-                  {user.firstName} {user.lastName} ({user.email})
-                </option>
-              ))}
-            </select>
-            {loadingUsers && <span className="loading-text">Loading users...</span>}
-          </div>
+          {editingPost && (
+            <div className="form-group">
+              <label htmlFor="create-item-reviewer">Reviewer (optional):</label>
+              <select
+                id="create-item-reviewer"
+                value={selectedReviewer}
+                onChange={(e) => setSelectedReviewer(e.target.value)}
+                className="user-select"
+                disabled={loadingUsers}
+              >
+                <option value="none">-- No Reviewer --</option>
+                {users.map(user => (
+                  <option key={user._id} value={user._id}>
+                    {user.firstName} {user.lastName} ({user.email})
+                  </option>
+                ))}
+              </select>
+              {loadingUsers && <span className="loading-text">Loading users...</span>}
+            </div>
+          )}
         </div>
 
         <div className="form-group">

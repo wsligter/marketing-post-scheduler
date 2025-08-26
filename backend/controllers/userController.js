@@ -270,18 +270,12 @@ exports.updateUserProfile = async (req, res) => {
   }
 };
 
-// Get users for assignment (excluding admin users)
+// Get users for assignment/review: all users above 'view-only'
 exports.getUsersForAssignment = async (req, res) => {
   try {
     const users = await User.find({
-      $and: [
-        { email: { $not: /^admin@/ } }, // Exclude emails starting with 'admin@'
-        { firstName: { $ne: 'admin' } }, // Exclude first name 'admin' (case sensitive)
-        { lastName: { $ne: 'admin' } }, // Exclude last name 'admin' (case sensitive)
-        { firstName: { $not: /^admin$/i } }, // Exclude first name 'admin' (case insensitive)
-        { lastName: { $not: /^admin$/i } } // Exclude last name 'admin' (case insensitive)
-      ]
-    }).select('firstName lastName email');
+      role: { $ne: 'view-only' }
+    }).select('firstName lastName email role');
     res.json(users);
   } catch (error) {
     console.error('Get users for assignment error:', error);

@@ -1,6 +1,6 @@
 {
   "name": "marketing-tool-backend",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Backend for marketing tool application",
   "main": "server.js",
   "scripts": {

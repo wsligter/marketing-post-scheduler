@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import api from '../utils/api';
 import PostDetailModal from '../components/posts/PostDetailModal';
+import config from '../config';
 import '../styles/dashboard.css';
 
 const DashboardPage = () => {
@@ -240,6 +241,15 @@ const DashboardPage = () => {
                     <div className="post-content-preview">
                       {post.content.substring(0, 100)}...
                     </div>
+                    {post.imageUrl && (
+                      <div className="post-image-thumb">
+                        <img
+                          src={post.imageUrl.startsWith('http') ? post.imageUrl : `${config.apiUrl}${post.imageUrl}`}
+                          alt="Post"
+                          className="post-thumb"
+                        />
+                      </div>
+                    )}
                     <div className="post-details">
                       <span className="post-date">{formatDate(post.scheduledDate)}</span>
                       

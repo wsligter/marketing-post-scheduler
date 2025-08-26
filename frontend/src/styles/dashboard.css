@@ -218,6 +218,8 @@
   margin: 0 auto;
   padding: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Prevent horizontal scrollbar caused by overflowing children */
+  overflow-x: hidden;
 }
 
 .dashboard-header {
@@ -451,6 +453,8 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
   position: relative;
+  /* Ensure absolutely positioned badges (like due-tab) can render outside */
+  overflow: visible;
 }
 
 /* Clickable Post Styling */
@@ -473,6 +477,22 @@
   line-height: 1.4;
   color: var(--kodify-black);
   margin-bottom: 8px;
+  /* Prevent long strings from causing horizontal overflow */
+  word-break: break-word;
+}
+
+/* Post image thumbnail inside dashboard list */
+.post-image-thumb {
+  margin-top: 8px;
+  border-radius: 6px;
+  overflow: hidden; /* clip edges and avoid inner scrollbars */
+}
+
+.post-thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
 .post-details {

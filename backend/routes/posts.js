@@ -156,7 +156,7 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
     const post = await Post.findById(req.params.id);
     if (!post) return res.status(404).json({ message: 'Post not found' });
     
-    const { content, scheduledDate, campaign, assignedUser } = req.body;
+    const { content, scheduledDate, campaign, assignedUser, reviewer } = req.body;
     
     // Update post data
     post.content = content;

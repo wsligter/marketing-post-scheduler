@@ -170,6 +170,9 @@ const PostSchedulerPage = () => {
     
     // Apply the current filter
     filterPosts(updatedAllPosts, selectedCampaign, selectedAssignee);
+
+    // Close edit form and return to initial page state
+    setEditingPost(null);
   };
   
   const handleEditPost = (post) => {

@@ -30,7 +30,6 @@ const CreateItemForm = ({
   const [users, setUsers] = useState([]);
   const [selectedCampaign, setSelectedCampaign] = useState('none');
   const [selectedUser, setSelectedUser] = useState('none');
-  const [selectedReviewer, setSelectedReviewer] = useState('none');
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [scheduledPosts, setScheduledPosts] = useState([]);
@@ -49,14 +48,17 @@ const CreateItemForm = ({
     fetchScheduledPosts();
   }, []);
 
-  // Populate fields in edit mode
+  // Populate fields in edit mode; reset when exiting edit mode
   useEffect(() => {
-    if (!editingPost) return;
+    if (!editingPost) {
+      // Exited edit mode -> clear all fields
+      resetForm();
+      return;
+    }
     setContent(editingPost.content || '');
     setScheduledDate(editingPost.scheduledDate ? new Date(editingPost.scheduledDate) : new Date());
     setSelectedCampaign(editingPost.campaign?._id || 'none');
     setSelectedUser(editingPost.assignedUser?._id || 'none');
-    setSelectedReviewer(editingPost.reviewer?._id || 'none');
     if (editingPost.imageUrl) {
       setImagePreview(editingPost.imageUrl);
       setImage(null);
@@ -120,7 +122,6 @@ const CreateItemForm = ({
     setScheduledDate(new Date());
     setSelectedCampaign('none');
     setSelectedUser('none');
-    setSelectedReviewer('none');
     setRemoveImage(false);
     const fileInput = document.getElementById('create-item-image');
     if (fileInput) fileInput.value = '';
@@ -146,10 +147,7 @@ const CreateItemForm = ({
       formData.append('scheduledDate', dateToSubmit.toISOString());
       formData.append('campaign', selectedCampaign === 'none' ? '' : selectedCampaign);
       formData.append('assignedUser', selectedUser === 'none' ? '' : selectedUser);
-      // Only include reviewer when editing an existing post; new items should not set reviewer from this form
-      if (editingPost) {
-        formData.append('reviewer', selectedReviewer === 'none' ? '' : selectedReviewer);
-      }
+      // Reviewer is no longer set from this form
       if (editingPost && removeImage) {
         formData.append('removeImage', 'true');
       }
@@ -283,26 +281,6 @@ const CreateItemForm = ({
             </select>
             {loadingUsers && <span className="loading-text">Loading users...</span>}
           </div>
-          {editingPost && (
-            <div className="form-group">
-              <label htmlFor="create-item-reviewer">Reviewer (optional):</label>
-              <select
-                id="create-item-reviewer"
-                value={selectedReviewer}
-                onChange={(e) => setSelectedReviewer(e.target.value)}
-                className="user-select"
-                disabled={loadingUsers}
-              >
-                <option value="none">-- No Reviewer --</option>
-                {users.map(user => (
-                  <option key={user._id} value={user._id}>
-                    {user.firstName} {user.lastName} ({user.email})
-                  </option>
-                ))}
-              </select>
-              {loadingUsers && <span className="loading-text">Loading users...</span>}
-            </div>
-          )}
         </div>
 
         <div className="form-group">

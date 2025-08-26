@@ -19,7 +19,6 @@ const PostForm = ({ onPostUpdated, editingPost, setEditingPost, onDeletePost }) 
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
   const [selectedUser, setSelectedUser] = useState('none');
-  const [selectedReviewer, setSelectedReviewer] = useState('none');
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [scheduledPosts, setScheduledPosts] = useState([]);
@@ -54,12 +53,7 @@ const PostForm = ({ onPostUpdated, editingPost, setEditingPost, onDeletePost }) 
       setSelectedUser('none');
     }
 
-    // Set reviewer if post has one
-    if (editingPost.reviewer) {
-      setSelectedReviewer(editingPost.reviewer._id);
-    } else {
-      setSelectedReviewer('none');
-    }
+    // Reviewer selection removed from edit form
 
     // Set image preview if post has an image
     if (editingPost.imageUrl) {
@@ -171,7 +165,6 @@ const PostForm = ({ onPostUpdated, editingPost, setEditingPost, onDeletePost }) 
     setImagePreview(null);
     setSelectedCampaign('none');
     setSelectedUser('none');
-    setSelectedReviewer('none');
     setError(null);
     setRemoveImage(false);
     
@@ -303,13 +296,7 @@ const PostForm = ({ onPostUpdated, editingPost, setEditingPost, onDeletePost }) 
         console.log('No user assigned');
       }
       
-      // Add reviewer if selected
-      if (selectedReviewer && selectedReviewer !== 'none') {
-        console.log('Selected reviewer:', selectedReviewer);
-        formData.append('reviewer', selectedReviewer);
-      } else {
-        console.log('No reviewer assigned');
-      }
+      // Reviewer is not set via edit form
       
       if (image) {
         console.log('Image attached:', image.name, image.type, image.size);
@@ -433,24 +420,7 @@ const PostForm = ({ onPostUpdated, editingPost, setEditingPost, onDeletePost }) 
             {loadingUsers && <span className="loading-text">Loading users...</span>}
           </div>
           
-          <div className="form-group">
-            <label htmlFor="reviewer">Reviewer:</label>
-            <select
-              id="reviewer"
-              value={selectedReviewer}
-              onChange={(e) => setSelectedReviewer(e.target.value)}
-              className="user-select"
-              disabled={loadingUsers}
-            >
-              <option value="none">-- No Reviewer --</option>
-              {users.map(user => (
-                <option key={user._id} value={user._id}>
-                  {user.firstName} {user.lastName} ({user.email})
-                </option>
-              ))}
-            </select>
-            {loadingUsers && <span className="loading-text">Loading users...</span>}
-          </div>
+          {/* Reviewer dropdown removed */}
         </div>
         
         <div className="form-group">

@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import api from '../../utils/api';
+import config from '../../config';
 import './PostDetailModal.css';
 
 const PostDetailModal = ({ post, isOpen, onClose, onPostUpdate }) => {
@@ -92,7 +93,11 @@ const PostDetailModal = ({ post, isOpen, onClose, onPostUpdate }) => {
           {post.imageUrl && (
             <div className="post-image-section">
               <h3>Image</h3>
-              <img src={post.imageUrl} alt="Post" className="post-image" />
+              <img 
+                src={post.imageUrl.startsWith('http') ? post.imageUrl : `${config.apiUrl}${post.imageUrl}`}
+                alt="Post" 
+                className="post-image" 
+              />
             </div>
           )}
 

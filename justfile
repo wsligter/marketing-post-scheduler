@@ -69,10 +69,7 @@ start backend-port="3002" frontend-port="8081": stop check-ports check-docker
 start-dev backend-port="3002" frontend-port="8081": stop check-ports check-docker
     #!/usr/bin/env bash
     BACKEND_PORT={{backend-port}} FRONTEND_PORT={{frontend-port}} docker-compose -f docker-compose.yml -f docker-compose.dev.yml up &
-    # Wait for frontend to start (increased delay to ensure app is fully built)
-    sleep 45
-    # Open browser
-    open http://localhost:{{frontend-port}}
+    # Browser auto-open disabled for dev runs
 
 # Start all containers in detached mode (stopping any existing ones first) and open browser
 # Optional parameters: backend-port, frontend-port
